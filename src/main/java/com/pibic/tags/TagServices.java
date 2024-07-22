@@ -53,4 +53,22 @@ public class TagServices {
         tagRepository.persist(tag);
         return new TagResponse(tag.getId(), tag.getName());
     }
+
+    public void deleteTag(Long tagId, Long userId) {
+        var user = userRepository.findById(userId);
+        if (user == null) {
+            throw new NotFoundException("User not found");
+        }
+        var tag = tagRepository.findById(tagId);
+        if (tag == null) {
+            throw new NotFoundException("Tag not found");
+        }
+        if(tag.isPublished() && !user.isAdmin()) {
+            throw new IllegalArgumentException("Only admin can delete published tag");
+        }
+        if (!user.isAdmin() && !(user.getId() == tag.getUser().getId())) {
+            throw new IllegalArgumentException("Only admin or tag owner can delete tag");
+        }
+        tagRepository.delete(tag);
+    }
 }

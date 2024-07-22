@@ -124,6 +124,39 @@ public class TagIntegrationTest {
         assertThrows(IllegalArgumentException.class, () -> tagServices.updateTag(tag.getId(), "Quarkus", anotherUser.getId()));
     }
 
+    @Test
+    @TestTransaction
+    public void ShouldAdminDeleteTag(){
+        var user = createUser(true);
+        var tagResponse = tagServices.createTag("Java", user.getId());
+        tagServices.deleteTag(tagResponse.id(), user.getId());
+        assertNull(tagRepository.findById(tagResponse.id()));
+    }
+
+    @Test
+    @TestTransaction
+    public void ShouldAdminCanDeletePublishedTag(){
+        var user = createUser(false);
+        var admin = createUser(true);
+        var tag = Tag.create("Java", user, true);
+        tag.publish(true);
+        tagRepository.persist(tag);
+        assertThrows(IllegalArgumentException.class, () -> tagServices.deleteTag(tag.getId(), user.getId()));
+        tagServices.deleteTag(tag.getId(), admin.getId());
+        assertNull(tagRepository.findById(tag.getId()));
+    }
+
+    @Test
+    @TestTransaction
+    public void ShouldOwnerDeleteTag(){
+        var user = createUser(false);
+        var anotherUser = createUser(false);
+        var tagResponse = tagServices.createTag("Java", user.getId());
+        assertThrows(IllegalArgumentException.class, () -> tagServices.deleteTag(tagResponse.id(), anotherUser.getId()));
+        tagServices.deleteTag(tagResponse.id(), user.getId());
+        assertNull(tagRepository.findById(tagResponse.id()));
+    }
+
     private User createUser(boolean isAdmin) {
         var user = User.create("John Doe",
                 "johndoe@email.com",

@@ -44,6 +44,10 @@ public class Tag {
         return name;
     }
 
+    public User getUser() {
+        return user;
+    }
+
     public boolean isPublished() {
         return isPublished;
     }
