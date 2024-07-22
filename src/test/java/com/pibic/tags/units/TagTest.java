@@ -1,6 +1,7 @@
 package com.pibic.tags.units;
 
 import com.pibic.tags.Tag;
+import com.pibic.users.User;
 import io.quarkus.test.junit.QuarkusTest;
 import org.junit.jupiter.api.Test;
 
@@ -11,19 +12,19 @@ class TagTest {
 
     @Test
     public void ShouldCreateTag() {
-        var tag = Tag.create("Java", true, true);
+        var tag = Tag.create("Java", createUser(true), true);
         assertEquals("Java", tag.getName());
         assertTrue(tag.isPublished());
     }
 
     @Test
     public void ShouldNotCreateTagWithNonUniqueName() {
-        assertThrows(IllegalArgumentException.class, () -> Tag.create("Java", true, false));
+        assertThrows(IllegalArgumentException.class, () -> Tag.create("Java", createUser(true), false));
     }
 
     @Test
     public void ShouldCreateUnPublishedTagNonAdmin() {
-        var tag = Tag.create("Java", false, true);
+        var tag = Tag.create("Java", createUser(false), true);
         assertEquals("Java", tag.getName());
         assertFalse(tag.isPublished());
     }
@@ -31,15 +32,40 @@ class TagTest {
     @Test
     public void ShouldUpdateName()
     {
-        var tag = Tag.create("Java", true, true);
-        tag.updateName("Java 8", true);
+        var user = createUser(true);
+        var tag = Tag.create("Java", user, true);
+        tag.updateName("Java 8", true, user);
         assertEquals("Java 8", tag.getName());
+    }
+
+    @Test
+    public void ShouldUpdateNameNonAdminWhenUnPublished()
+    {
+        var user = createUser(false);
+        var tag = Tag.create("Java", user, true);
+        tag.updateName("Java 8", true, user);
+        assertEquals("Java 8", tag.getName());
+    }
+
+    @Test
+    public void ShouldNotUpdateNameNonAdminWhenPublished()
+    {
+        var user = createUser(false);
+        var tag = Tag.create("Java", createUser(true), true);
+        assertThrows(IllegalArgumentException.class, () -> tag.updateName("Java 8", true, user));
     }
 
     @Test
     public void ShouldNotUpdateNameWithNonUniqueName()
     {
-        var tag = Tag.create("Java", true, true);
-        assertThrows(IllegalArgumentException.class, () -> tag.updateName("Java", false));
+        var user = createUser(true);
+        var tag = Tag.create("Java", user, true);
+        assertThrows(IllegalArgumentException.class, () -> tag.updateName("Java", false, user));
+    }
+
+    private final User createUser(boolean isAdmin) {
+        return User.create("John Doe",
+                "johndoe@email.com",
+                "123456", isAdmin, true);
     }
 }

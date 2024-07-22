@@ -1,9 +1,7 @@
 package com.pibic.tags;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.pibic.users.User;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "tags")
@@ -13,25 +11,33 @@ public class Tag {
     private Long id;
     private String name;
     private boolean isPublished;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
     public Tag() {
     }
 
-    private Tag(String name, boolean isPublished) {
+    private Tag(String name, boolean isPublished, User user) {
         this.name = name;
         this.isPublished = isPublished;
+        this.user = user;
     }
 
-    public static Tag create(String name, boolean isAdmin, boolean isUniqueName) {
-        var isPublished = isAdmin;
+    public static Tag create(String name, User user, boolean isUniqueName) {
+        var isPublished = user.isAdmin();
         if (!isUniqueName) {
             throw new IllegalArgumentException("Tag name must be unique");
         }
-        return new Tag(name, isPublished);
+        return new Tag(name, isPublished, user);
     }
 
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -42,7 +48,13 @@ public class Tag {
         return isPublished;
     }
 
-    public void updateName(String name, boolean isUniqueName) {
+    public void updateName(String name, boolean isUniqueName, User updatedBy) {
+        if(isPublished && !updatedBy.isAdmin()) {
+            throw new IllegalArgumentException("Only admin can update published tag name");
+        }
+        if (!updatedBy.isAdmin() && !(updatedBy.getId() == user.getId())) {
+            throw new IllegalArgumentException("Only admin or tag owner can update published tag name");
+        }
         if (!isUniqueName) {
             throw new IllegalArgumentException("Tag name must be unique");
         }

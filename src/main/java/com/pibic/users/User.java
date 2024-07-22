@@ -33,6 +33,10 @@ public class User {
         return new User(name, email, password, isAdmin);
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public Long getId() {
         return id;
     }
