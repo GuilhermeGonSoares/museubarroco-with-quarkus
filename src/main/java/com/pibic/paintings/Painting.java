@@ -7,7 +7,9 @@ import com.pibic.users.User;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "paintings")
@@ -43,7 +45,7 @@ public class Painting {
     @JoinTable(name = "painting_tags",
             joinColumns = @JoinColumn(name = "painting_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
-    private List<Tag> tags = new ArrayList<>();
+    private Set<Tag> tags = new HashSet<>();
 
     public Painting() {
     }
@@ -78,7 +80,7 @@ public class Painting {
         this.tags.addAll(tags);
     }
 
-    public static Painting createPainting(
+    public static Painting create(
             String title,
             String description,
             String artisan,
@@ -113,7 +115,7 @@ public class Painting {
         );
     }
 
-    public void updatePainting(
+    public void update(
             String title,
             String description,
             String artisan,
@@ -151,11 +153,15 @@ public class Painting {
         this.bibliographySource = bibliographySource;
         this.bibliographyReference = bibliographyReference;
         this.placement = placement;
+        this.church = church;
         this.images.addAll(images);
         this.engravings.addAll(engravings);
         this.tags.addAll(tags);
     }
 
+    public void publish() {
+        isPublished = true;
+    }
     public Long getId() {
         return id;
     }
@@ -208,7 +214,7 @@ public class Painting {
         return registeredBy;
     }
 
-    public List<Tag> getTags() {
+    public Set<Tag> getTags() {
         return tags;
     }
 }

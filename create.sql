@@ -9,7 +9,7 @@ create table churches (is_published boolean not null, id bigint not null, regist
 create table engravings (id bigint not null, painting_id bigint, created_by varchar(255), name varchar(255) not null, url varchar(255) not null, primary key (id));
 create table images (id bigint not null, photographer varchar(255), url varchar(255), primary key (id));
 create table painting_images (image_id bigint not null unique, painting_id bigint not null);
-create table painting_tags (painting_id bigint not null, tag_id bigint not null);
+create table painting_tags (painting_id bigint not null, tag_id bigint not null, primary key (painting_id, tag_id));
 create table paintings (is_published boolean not null, church_id bigint, id bigint not null, registered_by bigint, artisan varchar(255), bibliography_reference varchar(255), bibliography_source varchar(255), date_of_creation varchar(255), description varchar(255), placement varchar(255), title varchar(255) not null, primary key (id));
 create table tags (is_published boolean not null, id bigint not null, user_id bigint, name varchar(255), primary key (id));
 create table users (is_admin boolean not null, id bigint not null, email varchar(255), name varchar(255), password varchar(255), primary key (id));
