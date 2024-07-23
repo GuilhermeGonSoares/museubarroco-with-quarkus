@@ -1,5 +1,6 @@
 package com.pibic.churches;
 
+import com.pibic.paintings.Painting;
 import com.pibic.shared.Image;
 import com.pibic.users.User;
 import jakarta.persistence.*;
@@ -33,6 +34,8 @@ public class Church {
             inverseJoinColumns = @JoinColumn(name = "image_id"))
     @Cascade({org.hibernate.annotations.CascadeType.ALL})
     private List<Image> images = new ArrayList<>();
+    @OneToMany(mappedBy = "church")
+    private List<Painting> paintings = new ArrayList<>();
 
     public Church() {
     }
