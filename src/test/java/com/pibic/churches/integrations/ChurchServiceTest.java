@@ -10,6 +10,7 @@ import com.pibic.users.UserRepository;
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
+import jakarta.ws.rs.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -227,6 +228,56 @@ class ChurchServiceTest {
                 user.getId()
         );
         assertThrows(IllegalStateException.class, () -> churchService.updateChurch(updateChurchDto2));
+    }
+
+    @Test
+    @TestTransaction
+    public void ShouldAdminDeleteChurch(){
+        var user = createUser(true);
+        var imagesDto = List.of(
+                new ChurchImageDto("url", "photographer"),
+                new ChurchImageDto("url2", "photographer2")
+        );
+        var createChurchDto = new CreateChurchDto(
+                "Igreja Batista",
+                "Rua 1",
+                "Cidade 1",
+                "DF",
+                "Descrição",
+                "Referências",
+                user.getId(),
+                imagesDto
+        );
+        var id = churchService.createChurch(createChurchDto);
+        churchService.deleteChurch(id, user.getId());
+        assertThrows(NotFoundException.class, () -> churchService.getChurch(id));
+    }
+
+    @Test
+    @TestTransaction
+    public void NoAdminShouldNotDeletePublishedChurchAndNotDeleteChurchOfAnotherUser(){
+        var user = createUser(false);
+        var anotherUser = createUser(false);
+        var imagesDto = List.of(
+                new ChurchImageDto("url", "photographer"),
+                new ChurchImageDto("url2", "photographer2")
+        );
+        var createChurchDto = new CreateChurchDto(
+                "Igreja Batista",
+                "Rua 1",
+                "Cidade 1",
+                "DF",
+                "Descrição",
+                "Referências",
+                user.getId(),
+                imagesDto
+        );
+        var id = churchService.createChurch(createChurchDto);
+        assertThrows(IllegalStateException.class, () -> churchService.deleteChurch(id, anotherUser.getId()));
+        var church = churchRepository.findById(id);
+        church.publish();
+        churchRepository.persist(church);
+        assertThrows(IllegalStateException.class, () -> churchService.deleteChurch(id, user.getId()));
     }
 
     private User createUser(boolean isAdmin) {

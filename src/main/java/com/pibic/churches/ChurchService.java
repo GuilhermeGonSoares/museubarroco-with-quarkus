@@ -93,4 +93,23 @@ public class ChurchService {
         );
         churchRepository.persist(church);
     }
+
+    public Long deleteChurch(Long id, Long userId) {
+        var church = churchRepository.findById(id);
+        if (church == null) {
+            throw new NotFoundException("Church not found");
+        }
+        var user = userRepository.findById(userId);
+        if (user == null) {
+            throw new NotFoundException("User not found");
+        }
+        if (church.isPublished() && !user.isAdmin()) {
+            throw new IllegalStateException("Only admins can delete published churches");
+        }
+        if (!user.isAdmin() && !church.getRegisteredBy().getId().equals(userId)) {
+            throw new IllegalStateException("Only the user who registered the church can delete it");
+        }
+        churchRepository.delete(church);
+        return id;
+    }
 }
