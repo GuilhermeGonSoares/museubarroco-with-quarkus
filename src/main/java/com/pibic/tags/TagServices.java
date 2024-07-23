@@ -5,6 +5,7 @@ import com.pibic.tags.dtos.CreateTagResponse;
 import com.pibic.users.UserRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
 
 import java.util.List;
@@ -16,6 +17,7 @@ public class TagServices {
     @Inject
     UserRepository userRepository;
 
+    @Transactional
     public CreateTagResponse createTag(String name, Long userId) {
         var user = userRepository.findById(userId);
         if (user == null) {
@@ -39,6 +41,7 @@ public class TagServices {
         return new TagResponse(tag.getId(), tag.getName());
     }
 
+    @Transactional
     public TagResponse updateTag(Long tagId, String newName, Long userId) {
         var user = userRepository.findById(userId);
         if (user == null) {
@@ -50,10 +53,10 @@ public class TagServices {
         }
         var isUniqueName = !tagRepository.findByName(newName).isPresent();
         tag.updateName(newName, isUniqueName, user);
-        tagRepository.persist(tag);
         return new TagResponse(tag.getId(), tag.getName());
     }
 
+    @Transactional
     public void deleteTag(Long tagId, Long userId) {
         var user = userRepository.findById(userId);
         if (user == null) {

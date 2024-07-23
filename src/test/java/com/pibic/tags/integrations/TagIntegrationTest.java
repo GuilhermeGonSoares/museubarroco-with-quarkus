@@ -88,9 +88,10 @@ public class TagIntegrationTest {
         var user = createUser(true);
         var tagResponse = tagServices.createTag("Java", user.getId());
         var updatedTag = tagServices.updateTag(tagResponse.id(), "Java 17", user.getId());
+        var tag = tagRepository.findById(tagResponse.id());
         assertNotNull(updatedTag);
-        assertEquals("Java 17", updatedTag.name());
-        assertEquals(tagResponse.id(), updatedTag.id());
+        assertEquals("Java 17", tag.getName());
+        assertEquals(tagResponse.id(), tag.getId());
     }
 
     @Test
