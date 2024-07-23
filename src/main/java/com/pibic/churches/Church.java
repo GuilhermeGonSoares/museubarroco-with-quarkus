@@ -5,6 +5,7 @@ import com.pibic.users.User;
 import jakarta.persistence.*;
 import org.hibernate.annotations.Cascade;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -13,6 +14,7 @@ public class Church {
     @Id
     @GeneratedValue
     private Long id;
+    @Column(nullable = false)
     private String name;
     @Embedded
     private Address address;
@@ -20,6 +22,7 @@ public class Church {
     private String description;
     @Column(nullable = true)
     private String bibliographyReferences;
+    @Column(nullable = false)
     private boolean isPublished;
     @ManyToOne
     @JoinColumn(name = "registered_by")
@@ -28,8 +31,8 @@ public class Church {
     @JoinTable(name = "church_images",
             joinColumns = @JoinColumn(name = "church_id"),
             inverseJoinColumns = @JoinColumn(name = "image_id"))
-    @Cascade(org.hibernate.annotations.CascadeType.PERSIST)
-    private List<Image> images;
+    @Cascade({org.hibernate.annotations.CascadeType.ALL})
+    private List<Image> images = new ArrayList<>();
 
     public Church() {
     }
@@ -47,7 +50,7 @@ public class Church {
         this.bibliographyReferences = bibliographyReferences;
         this.isPublished = isPublished;
         this.registeredBy = registeredBy;
-        this.images = images;
+        this.images.addAll(new ArrayList<>(images));
     }
 
     public static Church create(String name,
@@ -55,9 +58,43 @@ public class Church {
                                  String description,
                                  String bibliographyReferences,
                                  User registeredBy,
-                                 List<Image> images) {
-        return new Church(name, address, description, bibliographyReferences,registeredBy.isAdmin(), registeredBy, images);
+                                 List<Image> images
+    ) {
+        var isPublished = registeredBy.isAdmin();
+        if (images.size() == 0) {
+            throw new IllegalArgumentException("Church must have at least one image");
+        }
+        return new Church(name, address, description, bibliographyReferences, isPublished, registeredBy, images);
     }
+
+    public void update(
+            String name,
+            Address address,
+            String description,
+            String bibliographyReferences,
+            List<String> imageUrlsToRemove,
+            List<Image> images,
+            User user
+    ) {
+        if (isPublished && !user.isAdmin()) {
+            throw new IllegalStateException("Only admins can update published churches");
+        }
+        if (!user.isAdmin() && !user.getId().equals(registeredBy.getId())) {
+            throw new IllegalStateException("Only the user who registered the church can update it");
+        }
+        if (imageUrlsToRemove != null) {
+            this.images.removeIf(image -> imageUrlsToRemove.contains(image.getUrl()));
+        }
+        if (this.images.size() + images.size() == 0) {
+            throw new IllegalArgumentException("Church must have at least one image");
+        }
+        this.name = name;
+        this.address = address;
+        this.description = description;
+        this.bibliographyReferences = bibliographyReferences;
+        this.images.addAll(new ArrayList<>(images));
+    }
+
 
     public Long getId() {
         return id;
@@ -81,6 +118,10 @@ public class Church {
 
     public boolean isPublished() {
         return isPublished;
+    }
+
+    public void publish() {
+        isPublished = true;
     }
 
     public User getRegisteredBy() {
