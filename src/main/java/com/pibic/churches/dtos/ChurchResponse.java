@@ -2,7 +2,7 @@ package com.pibic.churches.dtos;
 
 import java.util.List;
 
-public record ChurchDto(
+public record ChurchResponse(
         String name,
         String description,
         String bibliographyReferences,

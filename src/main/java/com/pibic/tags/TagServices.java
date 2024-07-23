@@ -1,7 +1,7 @@
 package com.pibic.tags;
 
-import com.pibic.tags.dtos.TagResponse;
-import com.pibic.tags.dtos.CreateTagResponse;
+import com.pibic.tags.dtos.TagDto;
+import com.pibic.tags.dtos.CreateTagDto;
 import com.pibic.users.UserRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -18,7 +18,7 @@ public class TagServices {
     UserRepository userRepository;
 
     @Transactional
-    public CreateTagResponse createTag(String name, Long userId) {
+    public CreateTagDto createTag(String name, Long userId) {
         var user = userRepository.findById(userId);
         if (user == null) {
             throw new NotFoundException("User not found");
@@ -26,23 +26,23 @@ public class TagServices {
         var isUniqueName = !tagRepository.findByName(name).isPresent();
         var tag = Tag.create(name, user, isUniqueName);
         tagRepository.persist(tag);
-        return new CreateTagResponse(tag.getId(), tag.getName());
+        return new CreateTagDto(tag.getId(), tag.getName());
     }
 
-    public List<TagResponse> getAllTags() {
+    public List<TagDto> getAllTags() {
         return tagRepository.findAll().stream()
-                .map(tag -> new TagResponse(tag.getId(), tag.getName()))
+                .map(tag -> new TagDto(tag.getId(), tag.getName()))
                 .toList();
     }
 
-    public TagResponse getTagByName(String name) {
+    public TagDto getTagByName(String name) {
         var tag = tagRepository.findByName(name)
                 .orElseThrow(() -> new NotFoundException("Tag not found"));
-        return new TagResponse(tag.getId(), tag.getName());
+        return new TagDto(tag.getId(), tag.getName());
     }
 
     @Transactional
-    public TagResponse updateTag(Long tagId, String newName, Long userId) {
+    public TagDto updateTag(Long tagId, String newName, Long userId) {
         var user = userRepository.findById(userId);
         if (user == null) {
             throw new NotFoundException("User not found");
@@ -53,7 +53,7 @@ public class TagServices {
         }
         var isUniqueName = !tagRepository.findByName(newName).isPresent();
         tag.updateName(newName, isUniqueName, user);
-        return new TagResponse(tag.getId(), tag.getName());
+        return new TagDto(tag.getId(), tag.getName());
     }
 
     @Transactional

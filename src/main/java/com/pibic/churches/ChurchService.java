@@ -1,6 +1,6 @@
 package com.pibic.churches;
 
-import com.pibic.churches.dtos.ChurchDto;
+import com.pibic.churches.dtos.ChurchResponse;
 import com.pibic.churches.dtos.ChurchImageDto;
 import com.pibic.churches.dtos.CreateChurchDto;
 import com.pibic.churches.dtos.UpdateChurchDto;
@@ -39,12 +39,12 @@ public class ChurchService {
         return church.getId();
     }
 
-    public ChurchDto getChurch(Long id) {
+    public ChurchResponse getChurch(Long id) {
         var church = churchRepository.find("id = ?1 and isPublished = true", id).firstResult();
         if (church == null) {
            throw new NotFoundException("Church not found");
         }
-        return new ChurchDto(
+        return new ChurchResponse(
                 church.getName(),
                 church.getDescription(),
                 church.getBibliographyReferences(),
@@ -57,9 +57,9 @@ public class ChurchService {
         );
     }
 
-    public List<ChurchDto> getChurches() {
+    public List<ChurchResponse> getChurches() {
         return churchRepository.find("isPublished = true").stream()
-                .map(church -> new ChurchDto(
+                .map(church -> new ChurchResponse(
                         church.getName(),
                         church.getDescription(),
                         church.getBibliographyReferences(),

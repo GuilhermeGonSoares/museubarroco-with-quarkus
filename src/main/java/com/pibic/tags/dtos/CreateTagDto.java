@@ -1,4 +1,4 @@
 package com.pibic.tags.dtos;
 
-public record CreateTagResponse(Long id, String name) {
+public record CreateTagDto(Long id, String name) {
 }

@@ -1,5 +1,7 @@
 package com.pibic.paintings.dtos;
 
+import com.pibic.tags.dtos.TagDto;
+
 import java.util.List;
 
 public record PaintingResponse(
@@ -12,34 +14,10 @@ public record PaintingResponse(
         String bibliographyReference,
         String placement,
         String registeredBy,
-        List<ImageResponse> images,
-        List<EngravingResponse> engravings,
-        ChurchResponse church,
-        List<TagResponse> tags
+        List<ImageDto> images,
+        List<EngravingDto> engravings,
+        ChurchDto church,
+        List<TagDto> tags
 ) {
 }
 
-record ImageResponse(
-        String url,
-        String photographer
-){}
-
-record EngravingResponse(
-        String name,
-        String url,
-        String createdBy
-){}
-
-record ChurchResponse(
-        Long id,
-        String name,
-        String city,
-        String state,
-        String street,
-        List<ImageResponse> images
-){}
-
-record TagResponse(
-        Long id,
-        String name
-){}
