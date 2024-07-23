@@ -124,7 +124,6 @@ class ChurchServiceTest {
                 imagesDto
         );
         var id = churchService.createChurch(createChurchDto);
-        var churchDto = churchService.getChurch(id);
         var updateChurchDto = new UpdateChurchDto(
                 id,
                 "Igreja Batista 2",
@@ -163,7 +162,6 @@ class ChurchServiceTest {
                 imagesDto
         );
         var id = churchService.createChurch(createChurchDto);
-        var churchDto = churchService.getChurch(id);
         var updateChurchDto = new UpdateChurchDto(
                 id,
                 "Igreja Batista 2",

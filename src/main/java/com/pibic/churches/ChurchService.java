@@ -8,6 +8,7 @@ import com.pibic.shared.Image;
 import com.pibic.users.UserRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
 
 import java.util.List;
@@ -19,6 +20,7 @@ public class ChurchService {
     @Inject
     UserRepository userRepository;
 
+    @Transactional
     public Long createChurch(CreateChurchDto createChurchDto) {
         var user = userRepository.findById(createChurchDto.registeredBy());
         if (user == null) {
@@ -71,6 +73,7 @@ public class ChurchService {
                 .toList();
     }
 
+    @Transactional
     public void updateChurch(UpdateChurchDto updateChurchDto) {
         var church = churchRepository.findById(updateChurchDto.id());
         if (church == null) {
@@ -91,9 +94,9 @@ public class ChurchService {
                         .toList(),
                 user
         );
-        churchRepository.persist(church);
     }
 
+    @Transactional
     public Long deleteChurch(Long id, Long userId) {
         var church = churchRepository.findById(id);
         if (church == null) {
