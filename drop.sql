@@ -1,0 +1,15 @@
+drop table if exists church_images cascade ;
+drop table if exists churches cascade ;
+drop table if exists engravings cascade ;
+drop table if exists images cascade ;
+drop table if exists painting_images cascade ;
+drop table if exists painting_tags cascade ;
+drop table if exists paintings cascade ;
+drop table if exists tags cascade ;
+drop table if exists users cascade ;
+drop sequence if exists churches_seq;
+drop sequence if exists engravings_seq;
+drop sequence if exists images_seq;
+drop sequence if exists paintings_seq;
+drop sequence if exists tags_seq;
+drop sequence if exists users_seq;

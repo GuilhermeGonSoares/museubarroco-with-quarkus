@@ -22,4 +22,20 @@ public class Engraving {
         this.createdBy = createdBy;
         this.url = url;
     }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public String getUrl() {
+        return url;
+    }
 }

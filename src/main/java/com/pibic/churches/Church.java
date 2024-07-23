@@ -53,7 +53,7 @@ public class Church {
         this.bibliographyReferences = bibliographyReferences;
         this.isPublished = isPublished;
         this.registeredBy = registeredBy;
-        this.images.addAll(new ArrayList<>(images));
+        this.images.addAll(images);
     }
 
     public static Church create(String name,
@@ -95,7 +95,7 @@ public class Church {
         this.address = address;
         this.description = description;
         this.bibliographyReferences = bibliographyReferences;
-        this.images.addAll(new ArrayList<>(images));
+        this.images.addAll(images);
     }
 
 
