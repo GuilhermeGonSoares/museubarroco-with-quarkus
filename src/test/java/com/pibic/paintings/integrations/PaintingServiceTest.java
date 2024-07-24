@@ -106,6 +106,28 @@ class PaintingServiceTest {
         assertEquals(painting.getArtisan(), paintingResponse.artisan());
     }
 
+    @Test
+    @TestTransaction
+    public void ShouldReturnNotFoundExceptionWhenPaintingNotFound(){
+        assertThrows(Exception.class, () -> paintingService.getPaintingById(1L));
+    }
+
+    @Test
+    @TestTransaction
+    public void ShouldReturnAllPublishedPainting(){
+        //arrange
+        var user = createUser(true);
+        var church = createChurch(user);
+        var tag = createTag(user);
+        var painting = createPainting(user, church, tag);
+        //act
+        var paintings = paintingService.getAllPaintings();
+        //assert
+        assertNotNull(paintings);
+        assertEquals(1, paintings.size());
+        assertEquals(painting.getId(), paintings.get(0).id());
+    }
+
     private Painting createPainting(User user, Church church, Tag tag){
         var painting = Painting.create(
                 "Pintura",
