@@ -47,9 +47,9 @@ class ChurchServiceTest {
                 "Igreja Batista",
                 "Rua 1",
                 "Cidade 1",
-                "DF",
                 "Descrição",
                 "Referências",
+                "DF",
                 user.getId(),
                 imagesDto
         );
@@ -70,9 +70,9 @@ class ChurchServiceTest {
                 "Igreja Batista",
                 "Rua 1",
                 "Cidade 1",
-                "DF",
                 "Descrição",
                 "Referências",
+                "DF",
                 user.getId(),
                 imagesDto
         );
@@ -92,9 +92,9 @@ class ChurchServiceTest {
                 "Igreja Batista",
                 "Rua 1",
                 "Cidade 1",
-                "DF",
                 "Descrição",
                 "Referências",
+                "DF",
                 user.getId(),
                 imagesDto
         );
@@ -117,9 +117,9 @@ class ChurchServiceTest {
                 "Igreja Batista",
                 "Rua 1",
                 "Cidade 1",
-                "DF",
                 "Descrição",
                 "Referências",
+                "DF",
                 user.getId(),
                 imagesDto
         );
@@ -155,9 +155,9 @@ class ChurchServiceTest {
                 "Igreja Batista",
                 "Rua 1",
                 "Cidade 1",
-                "DF",
                 "Descrição",
                 "Referências",
+                "DF",
                 user.getId(),
                 imagesDto
         );
@@ -190,9 +190,9 @@ class ChurchServiceTest {
                 "Igreja Batista",
                 "Rua 1",
                 "Cidade 1",
-                "DF",
                 "Descrição",
                 "Referências",
+                "DF",
                 user.getId(),
                 imagesDto
         );
@@ -240,9 +240,9 @@ class ChurchServiceTest {
                 "Igreja Batista",
                 "Rua 1",
                 "Cidade 1",
-                "DF",
                 "Descrição",
                 "Referências",
+                "DF",
                 user.getId(),
                 imagesDto
         );
@@ -264,9 +264,9 @@ class ChurchServiceTest {
                 "Igreja Batista",
                 "Rua 1",
                 "Cidade 1",
-                "DF",
                 "Descrição",
                 "Referências",
+                "DF",
                 user.getId(),
                 imagesDto
         );
