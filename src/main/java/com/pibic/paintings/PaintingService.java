@@ -37,6 +37,7 @@ public class PaintingService {
     public List<PaintingResponse> getAllPaintings() {
         return paintingRepository
                 .find("isPublished = true")
+                .list()
                 .stream()
                 .map(this::mappingToResponse)
                 .toList();
@@ -62,7 +63,7 @@ public class PaintingService {
                 church,
                 user,
                 createPaintingDto.images().stream().map(imageDto -> new Image(imageDto.url(), imageDto.photographer())).toList(),
-                createPaintingDto.engravings().stream().map(engravingDto -> new Engraving(engravingDto.name(), engravingDto.url(), engravingDto.createdBy())).toList(),
+                createPaintingDto.engravings().stream().map(engravingDto -> new Engraving(engravingDto.name(), engravingDto.createdBy(), engravingDto.url())).toList(),
                 tags
         );
         paintingRepository.persist(painting);
@@ -92,7 +93,7 @@ public class PaintingService {
                 updatePaintingDto.imagesUrlsToRemove(),
                 updatePaintingDto.images().stream().map(imageDto -> new Image(imageDto.url(), imageDto.photographer())).toList(),
                 updatePaintingDto.engravingsUrlsToRemove(),
-                updatePaintingDto.engravings().stream().map(engravingDto -> new Engraving(engravingDto.name(), engravingDto.url(), engravingDto.createdBy())).toList(),
+                updatePaintingDto.engravings().stream().map(engravingDto -> new Engraving(engravingDto.name(), engravingDto.createdBy(), engravingDto.url())).toList(),
                 tags,
                 church,
                 user

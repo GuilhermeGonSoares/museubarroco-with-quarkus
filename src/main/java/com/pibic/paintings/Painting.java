@@ -156,7 +156,7 @@ public class Painting {
         this.church = church;
         this.images.addAll(images);
         this.engravings.addAll(engravings);
-        this.tags.addAll(tags);
+        this.tags = new HashSet<>(tags);
     }
 
     public void publish() {
