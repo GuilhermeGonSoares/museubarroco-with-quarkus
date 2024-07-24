@@ -26,7 +26,7 @@ public class UserController {
                         request.admin()
                 )
         );
-        return Response.ok(user.getId()).build();
+        return Response.ok(user.getId()).status(Response.Status.CREATED).build();
     }
 
     @GET()

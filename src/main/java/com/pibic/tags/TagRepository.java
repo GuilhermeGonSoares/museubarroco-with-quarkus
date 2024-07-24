@@ -8,6 +8,6 @@ import java.util.Optional;
 @ApplicationScoped
 public class TagRepository implements PanacheRepository<Tag> {
     public Optional<Tag> findByName(String name) {
-        return find("name = ?1 and isPublished = true", name).firstResultOptional();
+        return find("lower(name) = lower(?1) and isPublished = true", name).firstResultOptional();
     }
 }
