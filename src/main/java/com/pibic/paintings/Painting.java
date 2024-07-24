@@ -27,12 +27,12 @@ public class Painting {
     private String bibliographySource;
     private String bibliographyReference;
     private String placement;
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "painting_images",
             joinColumns = @JoinColumn(name = "painting_id"),
             inverseJoinColumns = @JoinColumn(name = "image_id"))
     private List<Image> images = new ArrayList<>();
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "painting_id", referencedColumnName = "id")
     private List<Engraving> engravings = new ArrayList<>();
     @ManyToOne

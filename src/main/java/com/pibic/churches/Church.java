@@ -28,11 +28,10 @@ public class Church {
     @ManyToOne
     @JoinColumn(name = "registered_by")
     private User registeredBy;
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "church_images",
             joinColumns = @JoinColumn(name = "church_id"),
             inverseJoinColumns = @JoinColumn(name = "image_id"))
-    @Cascade({org.hibernate.annotations.CascadeType.ALL})
     private List<Image> images = new ArrayList<>();
     @OneToMany(mappedBy = "church")
     private List<Painting> paintings = new ArrayList<>();
