@@ -75,7 +75,7 @@ public class Church {
             String description,
             String bibliographyReferences,
             List<String> imageUrlsToRemove,
-            List<Image> images,
+            List<Image> imagesToBeAdded,
             User user
     ) {
         if (isPublished && !user.isAdmin()) {
@@ -87,14 +87,14 @@ public class Church {
         if (imageUrlsToRemove != null) {
             this.images.removeIf(image -> imageUrlsToRemove.contains(image.getUrl()));
         }
-        if (this.images.size() + images.size() == 0) {
+        if (this.images.size() + imagesToBeAdded.size() == 0) {
             throw new IllegalArgumentException("Church must have at least one image");
         }
         this.name = name;
         this.address = address;
         this.description = description;
         this.bibliographyReferences = bibliographyReferences;
-        this.images.addAll(images);
+        this.images.addAll(imagesToBeAdded);
     }
 
 

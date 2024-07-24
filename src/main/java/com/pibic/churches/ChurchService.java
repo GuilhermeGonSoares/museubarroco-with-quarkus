@@ -45,6 +45,7 @@ public class ChurchService {
            throw new NotFoundException("Church not found");
         }
         return new ChurchResponse(
+                church.getId(),
                 church.getName(),
                 church.getDescription(),
                 church.getBibliographyReferences(),
@@ -62,6 +63,7 @@ public class ChurchService {
                 .list()
                 .stream()
                 .map(church -> new ChurchResponse(
+                        church.getId(),
                         church.getName(),
                         church.getDescription(),
                         church.getBibliographyReferences(),

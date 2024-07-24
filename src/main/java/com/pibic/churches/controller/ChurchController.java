@@ -61,7 +61,7 @@ public class ChurchController {
                 updateChurchRequest.street(),
                 updateChurchRequest.city(),
                 updateChurchRequest.state(),
-                updateChurchRequest.imageUrlsToRemove(),
+                updateChurchRequest.imageUrlsToBeRemoved(),
                 updateChurchRequest.images()
                                     .stream()
                                     .map(image -> new ChurchImageDto(image.base64Image(), image.photographer())).toList(),

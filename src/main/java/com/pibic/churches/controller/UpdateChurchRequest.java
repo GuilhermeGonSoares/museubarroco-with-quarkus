@@ -9,7 +9,7 @@ public record UpdateChurchRequest(
         String city,
         String state,
         String bibliographyReference,
-        List<String> imageUrlsToRemove,
+        List<String> imageUrlsToBeRemoved,
         List<ImageChurchRequest> images
 ) {
 }
