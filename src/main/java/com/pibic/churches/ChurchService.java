@@ -58,7 +58,9 @@ public class ChurchService {
     }
 
     public List<ChurchResponse> getChurches() {
-        return churchRepository.find("isPublished = true").stream()
+        return churchRepository.find("isPublished = true")
+                .list()
+                .stream()
                 .map(church -> new ChurchResponse(
                         church.getName(),
                         church.getDescription(),
