@@ -15,6 +15,8 @@ public record UpdatePaintingDto(
         List<ImageDto> images,
         List<String> engravingsUrlsToRemove,
         List<EngravingDto> engravings,
-        List<Long> tags
+        List<Long> tags,
+        Long churchId,
+        Long userId
 ) {
 }

@@ -10,6 +10,7 @@ import com.pibic.paintings.PaintingService;
 import com.pibic.paintings.dtos.CreatePaintingDto;
 import com.pibic.paintings.dtos.EngravingDto;
 import com.pibic.paintings.dtos.ImageDto;
+import com.pibic.paintings.dtos.UpdatePaintingDto;
 import com.pibic.shared.Image;
 import com.pibic.tags.Tag;
 import com.pibic.tags.TagRepository;
@@ -128,6 +129,109 @@ class PaintingServiceTest {
         assertEquals(painting.getId(), paintings.get(0).id());
     }
 
+    @Test
+    @TestTransaction
+    public void ShouldAdminUpdatePainting(){
+        //arrange
+        var user = createUser(true);
+        var church = createChurch(user);
+        var tag = createTag(user);
+        var painting = createPainting(user, church, tag);
+        var updatePaintingDto = new UpdatePaintingDto(
+                painting.getId(),
+                "Pintura 2",
+                "Pintura de anjo 2",
+                "GuiGo",
+                "2021-08-01",
+                "bibliografia",
+                "referencia",
+                "Parede da igreja",
+                List.of("https://www.painting.com.br"),
+                List.of(new ImageDto("https://www.painting.com.br", "Yan Tavares")),
+                List.of("https://www.engraving.com.br"),
+                List.of(new EngravingDto("gravura de anjo", "https://www.engraving.com.br", "Yan Tavares")),
+                List.of(tag.getId(), 10L, 20L),
+                church.getId(),
+                user.getId()
+        );
+        //act
+        paintingService.updatePainting(updatePaintingDto);
+        //assert
+        var updatedPainting = paintingRepository.findById(painting.getId());
+        assertNotNull(updatedPainting);
+        assertEquals(updatePaintingDto.title(), updatedPainting.getTitle());
+        assertEquals(updatePaintingDto.description(), updatedPainting.getDescription());
+        assertEquals(updatePaintingDto.artisan(), updatedPainting.getArtisan());
+        assertEquals(updatePaintingDto.dateOfCreation(), updatedPainting.getDateOfCreation());
+        assertEquals(updatePaintingDto.bibliographySource(), updatedPainting.getBibliographySource());
+        assertEquals(updatePaintingDto.bibliographyReference(), updatedPainting.getBibliographyReference());
+        assertEquals(updatePaintingDto.placement(), updatedPainting.getPlacement());
+        assertEquals(church.getId(), updatedPainting.getChurch().getId());
+        assertEquals(user.getId(), updatedPainting.getRegisteredBy().getId());
+        assertEquals(1, updatedPainting.getImages().size());
+        assertEquals(1, updatedPainting.getEngravings().size());
+        assertEquals(1, updatedPainting.getTags().size());
+    }
+
+    @Test
+    @TestTransaction
+    public void ShouldUserUpdatePainting(){
+        //arrange
+        var user = createUser(false);
+        var church = createChurch(user);
+        var tag = createTag(user);
+        var painting = createPainting(user, church, tag);
+        var updatePaintingDto = new UpdatePaintingDto(
+                painting.getId(),
+                "Pintura 2",
+                "Pintura de anjo 2",
+                "GuiGo",
+                "2021-08-01",
+                "bibliografia",
+                "referencia",
+                "Parede da igreja",
+                List.of("https://www.painting.com.br"),
+                List.of(new ImageDto("https://www.painting.com.br", "Yan Tavares")),
+                List.of("https://www.engraving.com.br"),
+                List.of(new EngravingDto("gravura de anjo", "https://www.engraving.com.br", "Yan Tavares")),
+                List.of(tag.getId(), 10L, 20L),
+                church.getId(),
+                user.getId()
+        );
+        //act
+        paintingService.updatePainting(updatePaintingDto);
+        //assert
+        var updatedPainting = paintingRepository.findById(painting.getId());
+        assertNotNull(updatedPainting);
+        assertEquals(updatePaintingDto.title(), updatedPainting.getTitle());
+        assertEquals(updatePaintingDto.description(), updatedPainting.getDescription());
+        assertEquals(updatePaintingDto.artisan(), updatedPainting.getArtisan());
+        assertEquals(updatePaintingDto.dateOfCreation(), updatedPainting.getDateOfCreation());
+        assertEquals(updatePaintingDto.bibliographySource(), updatedPainting.getBibliographySource());
+        assertEquals(updatePaintingDto.bibliographyReference(), updatedPainting.getBibliographyReference());
+        assertEquals(updatePaintingDto.placement(), updatedPainting.getPlacement());
+        assertEquals(church.getId(), updatedPainting.getChurch().getId());
+        assertEquals(user.getId(), updatedPainting.getRegisteredBy().getId());
+        assertEquals(1, updatedPainting.getImages().size());
+        assertEquals(1, updatedPainting.getEngravings().size());
+        assertEquals(1, updatedPainting.getTags().size());
+    }
+
+    @Test
+    @TestTransaction
+    public void ShouldDeletePainting(){
+        //arrange
+        var user = createUser(true);
+        var church = createChurch(user);
+        var tag = createTag(user);
+        var painting = createPainting(user, church, tag);
+        //act
+        paintingService.deletePainting(painting.getId(), user.getId());
+        //assert
+        var deletedPainting = paintingRepository.findById(painting.getId());
+        assertNull(deletedPainting);
+    }
+
     private Painting createPainting(User user, Church church, Tag tag){
         var painting = Painting.create(
                 "Pintura",
@@ -140,7 +244,7 @@ class PaintingServiceTest {
                 church,
                 user,
                 List.of(new Image("https://www.painting.com.br", "Yan Tavares")),
-                List.of(new Engraving("gravura de anjo", "https://www.engraving.com.br", "Yan Tavares")),
+                List.of(new Engraving("gravura de anjo", "Yan Tavares", "https://www.engraving.com.br")),
                 List.of(tag)
         );
         paintingRepository.persist(painting);

@@ -69,6 +69,55 @@ public class PaintingService {
         return painting.getId();
     }
 
+    @Transactional
+    public void updatePainting(UpdatePaintingDto updatePaintingDto){
+        var painting = paintingRepository.findById(updatePaintingDto.id());
+        if (painting == null)
+            throw new NotFoundException("Painting not found");
+        var user = userRepository.findById(updatePaintingDto.userId());
+        if (user == null)
+            throw new NotFoundException("User not found");
+        var church = churchRepository.findById(updatePaintingDto.churchId());
+        if (church == null)
+            throw new NotFoundException("Church not found");
+        var tags = tagRepository.find("id in ?1", updatePaintingDto.tags()).list();
+        painting.update(
+                updatePaintingDto.title(),
+                updatePaintingDto.description(),
+                updatePaintingDto.artisan(),
+                updatePaintingDto.dateOfCreation(),
+                updatePaintingDto.bibliographySource(),
+                updatePaintingDto.bibliographyReference(),
+                updatePaintingDto.placement(),
+                updatePaintingDto.imagesUrlsToRemove(),
+                updatePaintingDto.images().stream().map(imageDto -> new Image(imageDto.url(), imageDto.photographer())).toList(),
+                updatePaintingDto.engravingsUrlsToRemove(),
+                updatePaintingDto.engravings().stream().map(engravingDto -> new Engraving(engravingDto.name(), engravingDto.url(), engravingDto.createdBy())).toList(),
+                tags,
+                church,
+                user
+        );
+    }
+
+    @Transactional
+    public void deletePainting(Long id, Long userId) {
+        var painting = paintingRepository.findById(id);
+        if (painting == null) {
+            throw new NotFoundException("Painting not found");
+        }
+        var user = userRepository.findById(userId);
+        if (user == null) {
+            throw new NotFoundException("User not found");
+        }
+        if (painting.isPublished() && !user.isAdmin()) {
+            throw new IllegalStateException("Only admins can delete published paintings");
+        }
+        if (!user.isAdmin() && !painting.getRegisteredBy().getId().equals(userId)) {
+            throw new IllegalStateException("Only the user who registered the painting can delete it");
+        }
+        paintingRepository.delete(painting);
+    }
+
     private PaintingResponse mappingToResponse(Painting painting) {
         return new PaintingResponse(
                 painting.getId(),
