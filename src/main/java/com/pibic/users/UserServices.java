@@ -1,5 +1,6 @@
 package com.pibic.users;
 
+import com.pibic.users.dtos.CreateUserDto;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -13,9 +14,15 @@ public class UserServices {
     UserRepository userRepository;
 
     @Transactional
-    public User createUser(String name, String email, String password, boolean isAdmin) {
-        var userWithEmail = userRepository.findByEmail(email);
-        var user = User.create(name, email, password, isAdmin, userWithEmail == null);
+    public User createUser(CreateUserDto createUserDto) {
+        var isEmailUnique = !userRepository.findByEmail(createUserDto.email()).isPresent();
+        var user = User.create(
+                createUserDto.name(),
+                createUserDto.email(),
+                createUserDto.password(),
+                createUserDto.isAdmin(),
+                isEmailUnique
+        );
         userRepository.persist(user);
         return user;
     }
@@ -25,6 +32,6 @@ public class UserServices {
     }
 
     public User findByEmail(String email) {
-        return userRepository.findByEmail(email);
+        return userRepository.findByEmail(email).orElse(null);
     }
 }
