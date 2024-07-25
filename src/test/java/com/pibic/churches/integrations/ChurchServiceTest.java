@@ -5,14 +5,17 @@ import com.pibic.churches.ChurchService;
 import com.pibic.churches.dtos.ChurchImageDto;
 import com.pibic.churches.dtos.CreateChurchDto;
 import com.pibic.churches.dtos.UpdateChurchDto;
+import com.pibic.shared.abstraction.IStorageService;
 import com.pibic.users.User;
 import com.pibic.users.UserRepository;
+import io.quarkus.test.InjectMock;
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +30,8 @@ class ChurchServiceTest {
     UserRepository userRepository;
     @Inject
     ChurchRepository churchRepository;
+    @InjectMock
+    IStorageService storageService;
 
     @BeforeEach
     @TestTransaction
@@ -40,7 +45,7 @@ class ChurchServiceTest {
     void ShouldCreateChurchAndGet() {
         var user = createUser(true);
         var imagesDto = List.of(
-                new ChurchImageDto("url", "photographer"),
+                new ChurchImageDto("base64Image", "photographer"),
                 new ChurchImageDto("url2", "photographer2")
         );
         var createChurchDto = new CreateChurchDto(
@@ -53,6 +58,7 @@ class ChurchServiceTest {
                 user.getId(),
                 imagesDto
         );
+        Mockito.when(storageService.uploadFile(Mockito.anyString(), Mockito.anyString(), Mockito.any())).thenReturn("url");
         var id = churchService.createChurch(createChurchDto);
         assertNotNull(id);
         var churchDto = churchService.getChurch(id);
@@ -85,7 +91,7 @@ class ChurchServiceTest {
     public void ShouldGetAllChurches(){
         var user = createUser(true);
         var imagesDto = List.of(
-                new ChurchImageDto("url", "photographer"),
+                new ChurchImageDto("base64Image", "photographer"),
                 new ChurchImageDto("url2", "photographer2")
         );
         var createChurchDto = new CreateChurchDto(
@@ -110,7 +116,7 @@ class ChurchServiceTest {
     public void ShouldAdminUpdateChurch(){
         var user = createUser(true);
         var imagesDto = new ArrayList<>(List.of(
-                new ChurchImageDto("url", "photographer"),
+                new ChurchImageDto("url1", "photographer"),
                 new ChurchImageDto("url2", "photographer2")
         ));
         var createChurchDto = new CreateChurchDto(
@@ -123,6 +129,11 @@ class ChurchServiceTest {
                 user.getId(),
                 imagesDto
         );
+        Mockito.when(storageService.uploadFile(Mockito.anyString(), Mockito.anyString(), Mockito.any()))
+                .thenReturn("url1")
+                .thenReturn("url2")
+                .thenReturn("url3");
+        Mockito.doNothing().when(storageService).deleteFile(Mockito.anyString(), Mockito.anyString());
         var id = churchService.createChurch(createChurchDto);
         var updateChurchDto = new UpdateChurchDto(
                 id,
@@ -132,7 +143,7 @@ class ChurchServiceTest {
                 "Rua 2",
                 "Cidade 2",
                 "GO",
-                new ArrayList<>(List.of("url", "url2")),
+                new ArrayList<>(List.of("url1", "url2")),
                 new ArrayList<>(List.of(new ChurchImageDto("url3", "photographer3"))),
                 user.getId()
         );
@@ -148,7 +159,7 @@ class ChurchServiceTest {
     public void ShouldNotUpdateChurchWithEmptyImages(){
         var user = createUser(true);
         var imagesDto = List.of(
-                new ChurchImageDto("url", "photographer"),
+                new ChurchImageDto("base64Image", "photographer"),
                 new ChurchImageDto("url2", "photographer2")
         );
         var createChurchDto = new CreateChurchDto(
@@ -161,6 +172,9 @@ class ChurchServiceTest {
                 user.getId(),
                 imagesDto
         );
+        Mockito.when(storageService.uploadFile(Mockito.anyString(), Mockito.anyString(), Mockito.any()))
+                .thenReturn("base64Image")
+                .thenReturn("url2");
         var id = churchService.createChurch(createChurchDto);
         var updateChurchDto = new UpdateChurchDto(
                 id,
@@ -170,7 +184,7 @@ class ChurchServiceTest {
                 "Rua 2",
                 "Cidade 2",
                 "GO",
-                List.of("url", "url2"),
+                List.of("base64Image", "url2"),
                 List.of(),
                 user.getId()
         );
@@ -183,7 +197,7 @@ class ChurchServiceTest {
         var user = createUser(false);
         var anotherUser = createUser(false);
         var imagesDto = List.of(
-                new ChurchImageDto("url", "photographer"),
+                new ChurchImageDto("base64Image", "photographer"),
                 new ChurchImageDto("url2", "photographer2")
         );
         var createChurchDto = new CreateChurchDto(
@@ -196,6 +210,10 @@ class ChurchServiceTest {
                 user.getId(),
                 imagesDto
         );
+        Mockito.when(storageService.uploadFile(Mockito.anyString(), Mockito.anyString(), Mockito.any()))
+                .thenReturn("base64Image")
+                .thenReturn("url2")
+                .thenReturn("url3");
         var id = churchService.createChurch(createChurchDto);
         var updateChurchDto = new UpdateChurchDto(
                 id,
@@ -205,7 +223,7 @@ class ChurchServiceTest {
                 "Rua 2",
                 "Cidade 2",
                 "GO",
-                List.of("url", "url2"),
+                List.of("base64Image", "url2"),
                 List.of(new ChurchImageDto("url3", "photographer3")),
                 anotherUser.getId()
         );
@@ -221,7 +239,7 @@ class ChurchServiceTest {
                 "Rua 2",
                 "Cidade 2",
                 "GO",
-                List.of("url", "url2"),
+                List.of("base64Image", "url2"),
                 List.of(new ChurchImageDto("url3", "photographer3")),
                 user.getId()
         );
@@ -233,7 +251,7 @@ class ChurchServiceTest {
     public void ShouldAdminDeleteChurch(){
         var user = createUser(true);
         var imagesDto = List.of(
-                new ChurchImageDto("url", "photographer"),
+                new ChurchImageDto("base64Image", "photographer"),
                 new ChurchImageDto("url2", "photographer2")
         );
         var createChurchDto = new CreateChurchDto(
@@ -246,6 +264,10 @@ class ChurchServiceTest {
                 user.getId(),
                 imagesDto
         );
+        Mockito.when(storageService.uploadFile(Mockito.anyString(), Mockito.anyString(), Mockito.any()))
+                .thenReturn("base64Image")
+                .thenReturn("url2");
+        Mockito.doNothing().when(storageService).deleteFile(Mockito.anyString(), Mockito.anyString());
         var id = churchService.createChurch(createChurchDto);
         churchService.deleteChurch(id, user.getId());
         assertThrows(NotFoundException.class, () -> churchService.getChurch(id));
@@ -257,7 +279,7 @@ class ChurchServiceTest {
         var user = createUser(false);
         var anotherUser = createUser(false);
         var imagesDto = List.of(
-                new ChurchImageDto("url", "photographer"),
+                new ChurchImageDto("base64Image", "photographer"),
                 new ChurchImageDto("url2", "photographer2")
         );
         var createChurchDto = new CreateChurchDto(
@@ -270,6 +292,10 @@ class ChurchServiceTest {
                 user.getId(),
                 imagesDto
         );
+        Mockito.when(storageService.uploadFile(Mockito.anyString(), Mockito.anyString(), Mockito.any()))
+                .thenReturn("base64Image")
+                .thenReturn("url2");
+        Mockito.doNothing().when(storageService).deleteFile(Mockito.anyString(), Mockito.anyString());
         var id = churchService.createChurch(createChurchDto);
         assertThrows(IllegalStateException.class, () -> churchService.deleteChurch(id, anotherUser.getId()));
         var church = churchRepository.findById(id);

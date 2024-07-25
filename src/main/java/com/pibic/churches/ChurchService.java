@@ -5,6 +5,8 @@ import com.pibic.churches.dtos.ChurchImageDto;
 import com.pibic.churches.dtos.CreateChurchDto;
 import com.pibic.churches.dtos.UpdateChurchDto;
 import com.pibic.shared.Image;
+import com.pibic.shared.ImageHelper;
+import com.pibic.shared.abstraction.IStorageService;
 import com.pibic.users.UserRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -15,10 +17,13 @@ import java.util.List;
 
 @ApplicationScoped
 public class ChurchService {
+    private static final String BLOB_CONTAINER = "churches";
     @Inject
     ChurchRepository churchRepository;
     @Inject
     UserRepository userRepository;
+    @Inject
+    IStorageService storageService;
 
     @Transactional
     public Long createChurch(CreateChurchDto createChurchDto) {
@@ -26,13 +31,14 @@ public class ChurchService {
         if (user == null) {
             throw new NotFoundException("User not found");
         }
+        var imageUrls = getImageUrls(createChurchDto.name(), createChurchDto.images());
         var church = Church.create(
                     createChurchDto.name(),
                     new Address(createChurchDto.street(), createChurchDto.city(), createChurchDto.state()),
                     createChurchDto.description(),
                     createChurchDto.bibliographyReferences(),
                     user,
-                    createChurchDto.images().stream()
+                    imageUrls.stream()
                             .map(imageDto -> new Image(imageDto.url(), imageDto.photographer()))
                             .toList());
         churchRepository.persist(church);
@@ -87,13 +93,16 @@ public class ChurchService {
         if (user == null) {
             throw new NotFoundException("User not found");
         }
+        if (!updateChurchDto.imageUrlsToBeRemoved().isEmpty())
+            updateChurchDto.imageUrlsToBeRemoved().forEach(imageUrl -> storageService.deleteFile(BLOB_CONTAINER, imageUrl));
+        var imageUrls = getImageUrls(church.getName(), updateChurchDto.images());
         church.update(
                 updateChurchDto.name(),
                 new Address(updateChurchDto.street(), updateChurchDto.city(), updateChurchDto.state()),
                 updateChurchDto.description(),
                 updateChurchDto.bibliographyReferences(),
                 updateChurchDto.imageUrlsToBeRemoved(),
-                updateChurchDto.images().stream()
+                imageUrls.stream()
                         .map(imageDto -> new Image(imageDto.url(), imageDto.photographer()))
                         .toList(),
                 user
@@ -116,7 +125,21 @@ public class ChurchService {
         if (!user.isAdmin() && !church.getRegisteredBy().getId().equals(userId)) {
             throw new IllegalStateException("Only the user who registered the church can delete it");
         }
+        church.getImages().forEach(image -> storageService.deleteFile(BLOB_CONTAINER, image.getUrl()));
         churchRepository.delete(church);
         return id;
     }
+
+    private List<ImageUploadResult> getImageUrls(String churchName, List<ChurchImageDto> images) {
+        return images.stream()
+                .map(imageDto -> new ImageUploadResult(
+                        storageService.uploadFile(
+                                BLOB_CONTAINER,
+                                ImageHelper.getImageName(churchName, imageDto.base64Image()),
+                                ImageHelper.getBase64ContentStream(imageDto.base64Image())),
+                        imageDto.photographer())
+                )
+                .toList();
+    }
+    public record ImageUploadResult(String url, String photographer) {}
 }
