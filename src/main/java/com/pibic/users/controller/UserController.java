@@ -4,6 +4,7 @@ import com.pibic.users.UserServices;
 import com.pibic.users.dtos.CreateUserDto;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -17,7 +18,7 @@ public class UserController {
     UserServices userServices;
 
     @POST
-    public Response createUser(CreateUserRequest request) {
+    public Response createUser(@Valid CreateUserRequest request) {
         var user = userServices.createUser(
                 new CreateUserDto(
                         request.name(),
