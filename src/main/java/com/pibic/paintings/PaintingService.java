@@ -88,6 +88,10 @@ public class PaintingService {
         if (church == null)
             throw new NotFoundException("Church not found");
         var tags = tagRepository.find("id in ?1", updatePaintingDto.tags()).list();
+        if (!updatePaintingDto.imagesUrlsToRemove().isEmpty())
+            updatePaintingDto.imagesUrlsToRemove().forEach(imageUrl -> storageService.deleteFile(BLOB_CONTAINER_PAINTING, imageUrl));
+        if (!updatePaintingDto.engravingsUrlsToRemove().isEmpty())
+            updatePaintingDto.engravingsUrlsToRemove().forEach(engravingUrl -> storageService.deleteFile(BLOB_CONTAINER_ENGRAVING, engravingUrl));
         painting.update(
                 updatePaintingDto.title(),
                 updatePaintingDto.description(),
