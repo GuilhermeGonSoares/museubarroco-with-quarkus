@@ -58,7 +58,7 @@ public class ChurchController {
                 id,
                 updateChurchRequest.name(),
                 updateChurchRequest.description(),
-                updateChurchRequest.bibliographyReference(),
+                String.join(";", updateChurchRequest.bibliographyReference()),
                 updateChurchRequest.street(),
                 updateChurchRequest.city(),
                 updateChurchRequest.state(),

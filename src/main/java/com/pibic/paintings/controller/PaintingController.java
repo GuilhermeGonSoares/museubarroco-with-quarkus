@@ -7,6 +7,7 @@ import com.pibic.paintings.dtos.ImageDto;
 import com.pibic.paintings.dtos.UpdatePaintingDto;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -32,13 +33,13 @@ public class PaintingController {
     }
 
     @POST
-    public Response createPainting(CreatePaintingRequest createPaintingRequest){
+    public Response createPainting(@Valid CreatePaintingRequest createPaintingRequest){
         var paintingDto = new CreatePaintingDto(
                 createPaintingRequest.title(),
                 createPaintingRequest.description(),
                 createPaintingRequest.dateOfCreation(),
                 createPaintingRequest.bibliographySource(),
-                createPaintingRequest.bibliographyReference(),
+                String.join(";", createPaintingRequest.bibliographyReference()),
                 createPaintingRequest.placement(),
                 createPaintingRequest.artisan(),
                 createPaintingRequest.churchId(),
@@ -59,7 +60,7 @@ public class PaintingController {
 
     @PUT
     @Path("{id}")
-    public Response updatePainting(@PathParam("id") Long id, UpdatePaintingRequest updatePaintingRequest){
+    public Response updatePainting(@PathParam("id") Long id, @Valid UpdatePaintingRequest updatePaintingRequest){
         var paintingDto = new UpdatePaintingDto(
                 id,
                 updatePaintingRequest.title(),
@@ -67,7 +68,7 @@ public class PaintingController {
                 updatePaintingRequest.artisan(),
                 updatePaintingRequest.dateOfCreation(),
                 updatePaintingRequest.bibliographySource(),
-                updatePaintingRequest.bibliographyReference(),
+                String.join(";", updatePaintingRequest.bibliographyReference()),
                 updatePaintingRequest.placement(),
                 updatePaintingRequest.urlImagesToRemove(),
                 updatePaintingRequest.images()

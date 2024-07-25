@@ -14,7 +14,7 @@ public record UpdateChurchRequest(
         String city,
         @NotBlank(message = "State is required")
         String state,
-        String bibliographyReference,
+        List<String> bibliographyReference,
         List<String> imageUrlsToBeRemoved,
         List<@Valid ImageChurchRequest> images
 ) {
