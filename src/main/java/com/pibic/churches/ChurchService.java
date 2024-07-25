@@ -91,8 +91,6 @@ public class ChurchService {
         if (user == null) {
             throw new NotFoundException("User not found");
         }
-        if (!updateChurchDto.imageUrlsToBeRemoved().isEmpty())
-            updateChurchDto.imageUrlsToBeRemoved().forEach(imageUrl -> storageService.deleteFile(BLOB_CONTAINER, imageUrl));
         church.update(
                 updateChurchDto.name(),
                 new Address(updateChurchDto.street(), updateChurchDto.city(), updateChurchDto.state()),
@@ -102,6 +100,8 @@ public class ChurchService {
                 getImageUrls(updateChurchDto.name(), updateChurchDto.images()),
                 user
         );
+        if (!updateChurchDto.imageUrlsToBeRemoved().isEmpty())
+            updateChurchDto.imageUrlsToBeRemoved().forEach(imageUrl -> storageService.deleteFile(BLOB_CONTAINER, imageUrl));
     }
 
     @Transactional

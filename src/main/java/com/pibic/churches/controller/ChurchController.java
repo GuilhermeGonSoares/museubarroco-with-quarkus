@@ -6,6 +6,7 @@ import com.pibic.churches.dtos.CreateChurchDto;
 import com.pibic.churches.dtos.UpdateChurchDto;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -33,11 +34,11 @@ public class ChurchController {
     }
 
     @POST
-    public Response createChurch(CreateChurchRequest createChurchRequest) {
+    public Response createChurch(@Valid CreateChurchRequest createChurchRequest) {
         var createChurchDto = new CreateChurchDto(
                 createChurchRequest.name(),
                 createChurchRequest.description(),
-                createChurchRequest.bibliographyReference(),
+                String.join(";", createChurchRequest.bibliographyReference()),
                 createChurchRequest.street(),
                 createChurchRequest.city(),
                 createChurchRequest.state(),
@@ -52,7 +53,7 @@ public class ChurchController {
 
     @PUT
     @Path("/{id}")
-    public Response updateChurch(@PathParam("id") Long id, UpdateChurchRequest updateChurchRequest) {
+    public Response updateChurch(@PathParam("id") Long id, @Valid UpdateChurchRequest updateChurchRequest) {
         var updateChurchDto = new UpdateChurchDto(
                 id,
                 updateChurchRequest.name(),
