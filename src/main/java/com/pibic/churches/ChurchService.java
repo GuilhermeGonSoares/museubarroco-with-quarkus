@@ -31,16 +31,14 @@ public class ChurchService {
         if (user == null) {
             throw new NotFoundException("User not found");
         }
-        var imageUrls = getImageUrls(createChurchDto.name(), createChurchDto.images());
         var church = Church.create(
                     createChurchDto.name(),
                     new Address(createChurchDto.street(), createChurchDto.city(), createChurchDto.state()),
                     createChurchDto.description(),
                     createChurchDto.bibliographyReferences(),
                     user,
-                    imageUrls.stream()
-                            .map(imageDto -> new Image(imageDto.url(), imageDto.photographer()))
-                            .toList());
+                    getImageUrls(createChurchDto.name(), createChurchDto.images())
+        );
         churchRepository.persist(church);
         return church.getId();
     }
@@ -95,16 +93,13 @@ public class ChurchService {
         }
         if (!updateChurchDto.imageUrlsToBeRemoved().isEmpty())
             updateChurchDto.imageUrlsToBeRemoved().forEach(imageUrl -> storageService.deleteFile(BLOB_CONTAINER, imageUrl));
-        var imageUrls = getImageUrls(church.getName(), updateChurchDto.images());
         church.update(
                 updateChurchDto.name(),
                 new Address(updateChurchDto.street(), updateChurchDto.city(), updateChurchDto.state()),
                 updateChurchDto.description(),
                 updateChurchDto.bibliographyReferences(),
                 updateChurchDto.imageUrlsToBeRemoved(),
-                imageUrls.stream()
-                        .map(imageDto -> new Image(imageDto.url(), imageDto.photographer()))
-                        .toList(),
+                getImageUrls(updateChurchDto.name(), updateChurchDto.images()),
                 user
         );
     }
@@ -130,9 +125,9 @@ public class ChurchService {
         return id;
     }
 
-    private List<ImageUploadResult> getImageUrls(String churchName, List<ChurchImageDto> images) {
+    private List<Image> getImageUrls(String churchName, List<ChurchImageDto> images) {
         return images.stream()
-                .map(imageDto -> new ImageUploadResult(
+                .map(imageDto -> new Image(
                         storageService.uploadFile(
                                 BLOB_CONTAINER,
                                 ImageHelper.getImageName(churchName, imageDto.base64Image()),
@@ -141,5 +136,5 @@ public class ChurchService {
                 )
                 .toList();
     }
-    public record ImageUploadResult(String url, String photographer) {}
+
 }

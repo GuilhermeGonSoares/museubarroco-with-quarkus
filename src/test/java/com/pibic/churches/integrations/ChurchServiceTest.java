@@ -58,7 +58,7 @@ class ChurchServiceTest {
                 user.getId(),
                 imagesDto
         );
-        Mockito.when(storageService.uploadFile(Mockito.anyString(), Mockito.anyString(), Mockito.any())).thenReturn("url");
+        Mockito.when(storageService.uploadFile(Mockito.anyString(), Mockito.anyString(), Mockito.any())).thenReturn("base64Image");
         var id = churchService.createChurch(createChurchDto);
         assertNotNull(id);
         var churchDto = churchService.getChurch(id);

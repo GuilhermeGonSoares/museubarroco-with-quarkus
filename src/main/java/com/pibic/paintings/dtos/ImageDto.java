@@ -1,6 +1,6 @@
 package com.pibic.paintings.dtos;
 
 public record ImageDto(
-        String url,
+        String base64Image,
         String photographer
 ){}

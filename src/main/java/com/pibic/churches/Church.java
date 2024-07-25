@@ -4,7 +4,6 @@ import com.pibic.paintings.Painting;
 import com.pibic.shared.Image;
 import com.pibic.users.User;
 import jakarta.persistence.*;
-import org.hibernate.annotations.Cascade;
 
 import java.util.ArrayList;
 import java.util.List;

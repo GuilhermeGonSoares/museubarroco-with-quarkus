@@ -3,6 +3,8 @@ package com.pibic.paintings;
 import com.pibic.churches.ChurchRepository;
 import com.pibic.paintings.dtos.*;
 import com.pibic.shared.Image;
+import com.pibic.shared.ImageHelper;
+import com.pibic.shared.abstraction.IStorageService;
 import com.pibic.tags.TagRepository;
 import com.pibic.tags.dtos.TagDto;
 import com.pibic.users.UserRepository;
@@ -15,6 +17,8 @@ import java.util.List;
 
 @ApplicationScoped
 public class PaintingService {
+    private static final String BLOB_CONTAINER_PAINTING = "paintings";
+    private static final String BLOB_CONTAINER_ENGRAVING = "engravings";
     @Inject
     PaintingRepository paintingRepository;
     @Inject
@@ -23,6 +27,8 @@ public class PaintingService {
     UserRepository userRepository;
     @Inject
     TagRepository tagRepository;
+    @Inject
+    IStorageService storageService;
 
     public PaintingResponse getPaintingById(Long id) {
         Painting painting = paintingRepository
@@ -62,8 +68,8 @@ public class PaintingService {
                 createPaintingDto.placement(),
                 church,
                 user,
-                createPaintingDto.images().stream().map(imageDto -> new Image(imageDto.url(), imageDto.photographer())).toList(),
-                createPaintingDto.engravings().stream().map(engravingDto -> new Engraving(engravingDto.name(), engravingDto.createdBy(), engravingDto.url())).toList(),
+                getImageWithUrls(createPaintingDto.title(), createPaintingDto.images()),
+                getEngravingWithUrls(createPaintingDto.title(), createPaintingDto.engravings()),
                 tags
         );
         paintingRepository.persist(painting);
@@ -91,9 +97,9 @@ public class PaintingService {
                 updatePaintingDto.bibliographyReference(),
                 updatePaintingDto.placement(),
                 updatePaintingDto.imagesUrlsToRemove(),
-                updatePaintingDto.images().stream().map(imageDto -> new Image(imageDto.url(), imageDto.photographer())).toList(),
+                getImageWithUrls(updatePaintingDto.title(), updatePaintingDto.images()),
                 updatePaintingDto.engravingsUrlsToRemove(),
-                updatePaintingDto.engravings().stream().map(engravingDto -> new Engraving(engravingDto.name(), engravingDto.createdBy(), engravingDto.url())).toList(),
+                getEngravingWithUrls(updatePaintingDto.title(), updatePaintingDto.engravings()),
                 tags,
                 church,
                 user
@@ -116,6 +122,8 @@ public class PaintingService {
         if (!user.isAdmin() && !painting.getRegisteredBy().getId().equals(userId)) {
             throw new IllegalStateException("Only the user who registered the painting can delete it");
         }
+        painting.getImages().forEach(image -> storageService.deleteFile(BLOB_CONTAINER_PAINTING, image.getUrl()));
+        painting.getEngravings().forEach(engraving -> storageService.deleteFile(BLOB_CONTAINER_ENGRAVING, engraving.getUrl()));
         paintingRepository.delete(painting);
     }
 
@@ -142,5 +150,31 @@ public class PaintingService {
                 ),
                 painting.getTags().stream().map(tag -> new TagDto(tag.getId(), tag.getName())).toList()
         );
+    }
+    private List<Image> getImageWithUrls(String paintingName, List<ImageDto> images){
+        return images
+                .stream()
+                .map(imageDto -> new Image(
+                        storageService.uploadFile(
+                                BLOB_CONTAINER_PAINTING,
+                                ImageHelper.getImageName(paintingName, imageDto.base64Image()),
+                                ImageHelper.getBase64ContentStream(imageDto.base64Image())),
+                        imageDto.photographer()
+                ))
+                .toList();
+    }
+    private List<Engraving> getEngravingWithUrls(String paintingName, List<EngravingDto> engravings){
+        return engravings
+                .stream()
+                .map(engravingDto -> new Engraving(
+                        engravingDto.name(),
+                        engravingDto.createdBy(),
+                        storageService.uploadFile(
+                                BLOB_CONTAINER_ENGRAVING,
+                                ImageHelper.getImageName(paintingName, engravingDto.base64Image()),
+                                ImageHelper.getBase64ContentStream(engravingDto.base64Image())
+                        )
+                ))
+                .toList();
     }
 }

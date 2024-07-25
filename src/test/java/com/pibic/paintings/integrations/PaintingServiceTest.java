@@ -12,16 +12,18 @@ import com.pibic.paintings.dtos.EngravingDto;
 import com.pibic.paintings.dtos.ImageDto;
 import com.pibic.paintings.dtos.UpdatePaintingDto;
 import com.pibic.shared.Image;
+import com.pibic.shared.abstraction.IStorageService;
 import com.pibic.tags.Tag;
 import com.pibic.tags.TagRepository;
 import com.pibic.users.User;
 import com.pibic.users.UserRepository;
+import io.quarkus.test.InjectMock;
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.util.List;
 
@@ -39,6 +41,8 @@ class PaintingServiceTest {
     UserRepository userRepository;
     @Inject
     TagRepository tagRepository;
+    @InjectMock
+    IStorageService storageService;
 
     @BeforeEach
     @TestTransaction
@@ -66,10 +70,13 @@ class PaintingServiceTest {
                 "Parede da igreja",
                 church.getId(),
                 user.getId(),
-                List.of(new ImageDto("https://www.painting.com.br", "Yan Tavares")),
-                List.of(new EngravingDto("gravura de anjo", "https://www.engraving.com.br", "Yan Tavares")),
+                List.of(new ImageDto("base64Painting", "Yan Tavares")),
+                List.of(new EngravingDto("gravura de anjo", "base64Engraving", "Yan Tavares")),
                 List.of(tag.getId(), 10L, 20L)
         );
+        Mockito.when(storageService.uploadFile(Mockito.anyString(), Mockito.anyString(), Mockito.any()))
+                .thenReturn("https://www.painting.com.br")
+                .thenReturn("https://www.engraving.com.br");
         //act
         var paintingId = paintingService.createPainting(createPaintingDto);
         //assert
@@ -147,13 +154,18 @@ class PaintingServiceTest {
                 "referencia",
                 "Parede da igreja",
                 List.of("https://www.painting.com.br"),
-                List.of(new ImageDto("https://www.painting.com.br", "Yan Tavares")),
+                List.of(new ImageDto("base64Painting", "Yan Tavares")),
                 List.of("https://www.engraving.com.br"),
-                List.of(new EngravingDto("gravura de anjo", "https://www.engraving.com.br", "Yan Tavares")),
+                List.of(new EngravingDto("gravura de anjo", "base64Engraving", "Yan Tavares")),
                 List.of(tag.getId(), 10L, 20L),
                 church.getId(),
                 user.getId()
         );
+        Mockito.doNothing()
+                .when(storageService).deleteFile(Mockito.anyString(), Mockito.anyString());
+        Mockito.when(storageService.uploadFile(Mockito.anyString(), Mockito.anyString(), Mockito.any()))
+                .thenReturn("https://www.painting2.com.br")
+                .thenReturn("https://www.engraving2.com.br");
         //act
         paintingService.updatePainting(updatePaintingDto);
         //assert
@@ -191,13 +203,18 @@ class PaintingServiceTest {
                 "referencia",
                 "Parede da igreja",
                 List.of("https://www.painting.com.br"),
-                List.of(new ImageDto("https://www.painting.com.br", "Yan Tavares")),
+                List.of(new ImageDto("base64Painting", "Yan Tavares")),
                 List.of("https://www.engraving.com.br"),
-                List.of(new EngravingDto("gravura de anjo", "https://www.engraving.com.br", "Yan Tavares")),
+                List.of(new EngravingDto("gravura de anjo", "base64Engraving", "Yan Tavares")),
                 List.of(tag.getId(), 10L, 20L),
                 church.getId(),
                 user.getId()
         );
+        Mockito.doNothing()
+                        .when(storageService).deleteFile(Mockito.anyString(), Mockito.anyString());
+        Mockito.when(storageService.uploadFile(Mockito.anyString(), Mockito.anyString(), Mockito.any()))
+                .thenReturn("https://www.painting2.com.br")
+                .thenReturn("https://www.engraving2.com.br");
         //act
         paintingService.updatePainting(updatePaintingDto);
         //assert
@@ -215,6 +232,8 @@ class PaintingServiceTest {
         assertEquals(1, updatedPainting.getImages().size());
         assertEquals(1, updatedPainting.getEngravings().size());
         assertEquals(1, updatedPainting.getTags().size());
+        assertEquals("https://www.painting2.com.br", updatedPainting.getImages().get(0).getUrl());
+        assertEquals("https://www.engraving2.com.br", updatedPainting.getEngravings().get(0).getUrl());
     }
 
     @Test
@@ -225,6 +244,8 @@ class PaintingServiceTest {
         var church = createChurch(user);
         var tag = createTag(user);
         var painting = createPainting(user, church, tag);
+        Mockito.doNothing()
+                .when(storageService).deleteFile(Mockito.anyString(), Mockito.anyString());
         //act
         paintingService.deletePainting(painting.getId(), user.getId());
         //assert
