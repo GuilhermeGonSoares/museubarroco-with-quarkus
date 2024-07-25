@@ -3,6 +3,7 @@ package com.pibic.tags.controller;
 import com.pibic.tags.TagServices;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -24,14 +25,14 @@ public class TagController {
     }
 
     @POST
-    public Response createTag(CreateTagRequest createTagRequest) {
+    public Response createTag(@Valid CreateTagRequest createTagRequest) {
         var tag = tagServices.createTag(createTagRequest.name(), userId);
         return Response.ok(tag.id()).status(Response.Status.CREATED).build();
     }
 
     @PUT
     @Path("/{id}")
-    public Response updateTag(@PathParam("id") Long id, UpdateTagRequest updateTagRequest) {
+    public Response updateTag(@PathParam("id") Long id, @Valid UpdateTagRequest updateTagRequest) {
         var tag = tagServices.updateTag(id, updateTagRequest.name(), userId);
         return Response.ok(tag).build();
     }
