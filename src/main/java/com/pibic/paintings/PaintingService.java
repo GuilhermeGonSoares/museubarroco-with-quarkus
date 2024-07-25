@@ -88,10 +88,6 @@ public class PaintingService {
         if (church == null)
             throw new NotFoundException("Church not found");
         var tags = tagRepository.find("id in ?1", updatePaintingDto.tags()).list();
-        if (!updatePaintingDto.imagesUrlsToRemove().isEmpty())
-            updatePaintingDto.imagesUrlsToRemove().forEach(imageUrl -> storageService.deleteFile(BLOB_CONTAINER_PAINTING, imageUrl));
-        if (!updatePaintingDto.engravingsUrlsToRemove().isEmpty())
-            updatePaintingDto.engravingsUrlsToRemove().forEach(engravingUrl -> storageService.deleteFile(BLOB_CONTAINER_ENGRAVING, engravingUrl));
         painting.update(
                 updatePaintingDto.title(),
                 updatePaintingDto.description(),
@@ -108,6 +104,10 @@ public class PaintingService {
                 church,
                 user
         );
+        if (!updatePaintingDto.imagesUrlsToRemove().isEmpty())
+            updatePaintingDto.imagesUrlsToRemove().forEach(imageUrl -> storageService.deleteFile(BLOB_CONTAINER_PAINTING, imageUrl));
+        if (!updatePaintingDto.engravingsUrlsToRemove().isEmpty())
+            updatePaintingDto.engravingsUrlsToRemove().forEach(engravingUrl -> storageService.deleteFile(BLOB_CONTAINER_ENGRAVING, engravingUrl));
     }
 
     @Transactional
@@ -126,9 +126,9 @@ public class PaintingService {
         if (!user.isAdmin() && !painting.getRegisteredBy().getId().equals(userId)) {
             throw new IllegalStateException("Only the user who registered the painting can delete it");
         }
+        paintingRepository.delete(painting);
         painting.getImages().forEach(image -> storageService.deleteFile(BLOB_CONTAINER_PAINTING, image.getUrl()));
         painting.getEngravings().forEach(engraving -> storageService.deleteFile(BLOB_CONTAINER_ENGRAVING, engraving.getUrl()));
-        paintingRepository.delete(painting);
     }
 
     private PaintingResponse mappingToResponse(Painting painting) {

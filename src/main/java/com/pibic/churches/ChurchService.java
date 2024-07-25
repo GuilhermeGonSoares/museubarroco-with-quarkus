@@ -120,8 +120,8 @@ public class ChurchService {
         if (!user.isAdmin() && !church.getRegisteredBy().getId().equals(userId)) {
             throw new IllegalStateException("Only the user who registered the church can delete it");
         }
-        church.getImages().forEach(image -> storageService.deleteFile(BLOB_CONTAINER, image.getUrl()));
         churchRepository.delete(church);
+        church.getImages().forEach(image -> storageService.deleteFile(BLOB_CONTAINER, image.getUrl()));
         return id;
     }
 
