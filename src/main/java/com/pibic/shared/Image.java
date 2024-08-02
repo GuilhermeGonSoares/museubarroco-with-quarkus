@@ -13,6 +13,7 @@ public class Image {
     private Long id;
     private String url;
     private String photographer;
+    private String type;
 
     public Image() {
     }
@@ -44,5 +45,9 @@ public class Image {
 
     public void setPhotographer(String photographer) {
         this.photographer = photographer;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

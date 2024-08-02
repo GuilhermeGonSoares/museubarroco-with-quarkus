@@ -96,6 +96,12 @@ public class Church {
         this.images.addAll(imagesToBeAdded);
     }
 
+    @PrePersist
+    public void prePersist() {
+        for (var image : images) {
+            image.setType("church");
+        }
+    }
 
     public Long getId() {
         return id;

@@ -80,6 +80,13 @@ public class Painting {
         this.tags.addAll(tags);
     }
 
+    @PrePersist
+    public void prePersist(){
+        for (var image : images){
+            image.setType("painting");
+        }
+    }
+
     public static Painting create(
             String title,
             String description,
