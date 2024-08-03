@@ -4,6 +4,7 @@ import com.pibic.churches.Address;
 import com.pibic.churches.Church;
 import com.pibic.paintings.Engraving;
 import com.pibic.paintings.Painting;
+import com.pibic.paintings.Suggestion;
 import com.pibic.shared.Image;
 import com.pibic.tags.Tag;
 import com.pibic.users.User;
@@ -176,7 +177,7 @@ class PaintingTest {
         );
         painting.publish();
         // act
-        assertThrows(IllegalStateException.class, () -> painting.update(
+        assertThrows(IllegalArgumentException.class, () -> painting.update(
                 "Anjos 2",
                 "Anjo com trombeta 2",
                 "Gabriel 2",
@@ -316,7 +317,7 @@ class PaintingTest {
                 List.of(tag)
         );
         // act
-        assertThrows(IllegalStateException.class, () -> painting.update(
+        assertThrows(IllegalArgumentException.class, () -> painting.update(
                 "Anjos 2",
                 "Anjo com trombeta 2",
                 "Gabriel 2",
@@ -333,6 +334,119 @@ class PaintingTest {
                 church,
                 anotherUser
         ));
+    }
+
+    @Test
+    public void ShouldCommonUserAddSuggestionToPublishedPainting() {
+        //arrange
+        var user = createUser(false);
+        user.setId(1L);
+        var church = createChurch(user);
+        var tag = createTag(user);
+        var painting = Painting.create(
+                "Anjos",
+                "Anjo com trombeta",
+                "Gabriel",
+                "2024",
+                "reference1",
+                "reference2",
+                "Parede 1",
+                church,
+                user,
+                List.of(new Image("https://www.google.com.br", "Yan Tavares")),
+                List.of(new Engraving("Gravura de anjo", "Yan Tavares", "https://www.engraving.com.br")),
+                List.of(tag)
+        );
+        painting.publish();
+        var suggestion = createSuggestion(user);
+        //act
+        painting.addSuggestion(suggestion);
+        //assert
+        assertEquals(1, painting.getSuggestions().size());
+        assertEquals(suggestion.getReason(), painting.getSuggestions().get(0).getReason());
+    }
+
+    @Test
+    public void ShouldNotAddSuggestionToUnpublishedPainting(){
+        //arrange
+        var user = createUser(false);
+        user.setId(1L);
+        var church = createChurch(user);
+        var tag = createTag(user);
+        var painting = Painting.create(
+                "Anjos",
+                "Anjo com trombeta",
+                "Gabriel",
+                "2024",
+                "reference1",
+                "reference2",
+                "Parede 1",
+                church,
+                user,
+                List.of(new Image("https://www.google.com.br", "Yan Tavares")),
+                List.of(new Engraving("Gravura de anjo", "Yan Tavares", "https://www.engraving.com.br")),
+                List.of(tag)
+        );
+        var suggestion = createSuggestion(user);
+
+        //act and assert
+        assertThrows(IllegalArgumentException.class, () -> painting.addSuggestion(suggestion));
+    }
+
+    @Test
+    public void ShouldNotAddSuggestionAdminUser(){
+        //arrange
+        var user = createUser(true);
+        user.setId(1L);
+        var church = createChurch(user);
+        var tag = createTag(user);
+        var painting = Painting.create(
+                "Anjos",
+                "Anjo com trombeta",
+                "Gabriel",
+                "2024",
+                "reference1",
+                "reference2",
+                "Parede 1",
+                church,
+                user,
+                List.of(new Image("https://www.google.com.br", "Yan Tavares")),
+                List.of(new Engraving("Gravura de anjo", "Yan Tavares", "https://www.engraving.com.br")),
+                List.of(tag)
+        );
+        var suggestion = createSuggestion(user);
+
+        //act and assert
+        assertThrows(IllegalArgumentException.class, () -> painting.addSuggestion(suggestion));
+    }
+
+    @Test
+    public void ShouldNotAnotherCommonUserAddSuggestion(){
+        //arrange
+        var user = createUser(false);
+        var anotherUser = createUser(false);
+        user.setId(1L);
+        anotherUser.setId(2L);
+        var church = createChurch(user);
+        var tag = createTag(user);
+        var painting = Painting.create(
+                "Anjos",
+                "Anjo com trombeta",
+                "Gabriel",
+                "2024",
+                "reference1",
+                "reference2",
+                "Parede 1",
+                church,
+                user,
+                List.of(new Image("https://www.google.com.br", "Yan Tavares")),
+                List.of(new Engraving("Gravura de anjo", "Yan Tavares", "https://www.engraving.com.br")),
+                List.of(tag)
+        );
+        var suggestion = createSuggestion(anotherUser);
+        //act and assert
+        assertThrows(IllegalArgumentException.class, () -> painting.addSuggestion(suggestion));
+
     }
 
     private User createUser(boolean isAdmin){
@@ -362,5 +476,15 @@ class PaintingTest {
                 user,
                 true
         );
+    }
+
+    private Suggestion createSuggestion(User user){
+        var suggestion = new Suggestion(
+                "reason",
+                user,
+                List.of(new Image("https://www.google.com.br", "Yan Tavares"))
+        );
+        suggestion.setId(1L);
+        return suggestion;
     }
 }

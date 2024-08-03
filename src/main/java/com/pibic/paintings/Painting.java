@@ -46,6 +46,9 @@ public class Painting {
             joinColumns = @JoinColumn(name = "painting_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
     private Set<Tag> tags = new HashSet<>();
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "painting_id", referencedColumnName = "id")
+    private List<Suggestion> suggestions = new ArrayList<>();
 
     public Painting() {
     }
@@ -139,10 +142,10 @@ public class Painting {
             User user
     ) {
         if (isPublished && !user.isAdmin()) {
-            throw new IllegalStateException("Only admins can update published paintings");
+            throw new IllegalArgumentException("Only admins can update published paintings");
         }
         if (!user.isAdmin() && !user.getId().equals(registeredBy.getId())) {
-            throw new IllegalStateException("Only the user who registered the painting can update it");
+            throw new IllegalArgumentException("Only the user who registered the painting can update it");
         }
         if (imageUrlsToRemove != null) {
             this.images.removeIf(image -> imageUrlsToRemove.contains(image.getUrl()));
@@ -165,6 +168,21 @@ public class Painting {
         this.engravings.addAll(engravings);
         this.tags = new HashSet<>(tags);
     }
+
+    public void addSuggestion(Suggestion suggestion){
+        if (!isPublished){
+            throw new IllegalArgumentException("Painting must be published to receive suggestions");
+        }
+        var suggestedBy = suggestion.getUser();
+        if (suggestedBy.isAdmin() || !suggestedBy.getId().equals(registeredBy.getId())){
+            throw new IllegalArgumentException("Only the user who registered the painting can suggest changes");
+        }
+        if (suggestions.stream().anyMatch(s -> s.getId().equals(suggestion.getId()))){
+            throw new IllegalArgumentException("Suggestion already added");
+        }
+        suggestions.add(suggestion);
+    }
+
 
     public void publish() {
         isPublished = true;
@@ -223,5 +241,9 @@ public class Painting {
 
     public Set<Tag> getTags() {
         return tags;
+    }
+
+    public List<Suggestion> getSuggestions() {
+        return suggestions;
     }
 }
