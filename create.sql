@@ -13,11 +13,11 @@
 
     create table church_images (
         church_id bigint not null,
-        image_id bigint not null unique
+        image_id bigint not null
     );
 
     create table churches (
-        is_published boolean not null,
+        is_published bit not null,
         id bigint not null,
         registered_by bigint,
         bibliography_references varchar(255),
@@ -47,7 +47,7 @@
     );
 
     create table painting_images (
-        image_id bigint not null unique,
+        image_id bigint not null,
         painting_id bigint not null
     );
 
@@ -58,7 +58,7 @@
     );
 
     create table paintings (
-        is_published boolean not null,
+        is_published bit not null,
         church_id bigint,
         id bigint not null,
         registered_by bigint,
@@ -73,7 +73,7 @@
     );
 
     create table tags (
-        is_published boolean not null,
+        is_published bit not null,
         id bigint not null,
         user_id bigint,
         name varchar(255),
@@ -81,7 +81,7 @@
     );
 
     create table users (
-        is_admin boolean not null,
+        is_admin bit not null,
         id bigint not null,
         email varchar(255),
         name varchar(255),
@@ -89,57 +89,63 @@
         primary key (id)
     );
 
-    alter table if exists church_images 
+    alter table church_images 
+       add constraint UK8d6gqjduv25xguf6pglf0gkwv unique (image_id);
+
+    alter table painting_images 
+       add constraint UKgen1nchodrk13jdgx2xuotmri unique (image_id);
+
+    alter table church_images 
        add constraint FK7e1akn1h3j4oufc136lfy3dqh 
        foreign key (image_id) 
        references images;
 
-    alter table if exists church_images 
+    alter table church_images 
        add constraint FKe52dwumx1xwkfa2fds8wr4bgn 
        foreign key (church_id) 
        references churches;
 
-    alter table if exists churches 
+    alter table churches 
        add constraint FKivksbjljx2mwpxecj7hh7du29 
        foreign key (registered_by) 
        references users;
 
-    alter table if exists engravings 
+    alter table engravings 
        add constraint FKegvuxiwhswpnv0rc642m84t82 
        foreign key (painting_id) 
        references paintings;
 
-    alter table if exists painting_images 
+    alter table painting_images 
        add constraint FK92thfunrbytapuxylfw0l2scj 
        foreign key (image_id) 
        references images;
 
-    alter table if exists painting_images 
+    alter table painting_images 
        add constraint FKgga7sc0t6deuxefontd977i6l 
        foreign key (painting_id) 
        references paintings;
 
-    alter table if exists painting_tags 
+    alter table painting_tags 
        add constraint FKbvbxte7n8xigdq6fmr7h4g2hi 
        foreign key (tag_id) 
        references tags;
 
-    alter table if exists painting_tags 
+    alter table painting_tags 
        add constraint FK6hidi2bemr8gpdao761adnpgq 
        foreign key (painting_id) 
        references paintings;
 
-    alter table if exists paintings 
+    alter table paintings 
        add constraint FK8bqruf5qhsq22wtja3hkvtrq1 
        foreign key (church_id) 
        references churches;
 
-    alter table if exists paintings 
+    alter table paintings 
        add constraint FK3sbwj77ow6k6ufdesaynrwls1 
        foreign key (registered_by) 
        references users;
 
-    alter table if exists tags 
+    alter table tags 
        add constraint FKpsynysaxl7cyw8mr5c8xevneg 
        foreign key (user_id) 
        references users;
