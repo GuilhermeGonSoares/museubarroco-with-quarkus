@@ -22,8 +22,21 @@ jobs:
           java-version: '21'
           distribution: 'microsoft'
 
+      - name : Load enviroment variables from .env
+        run: |
+          echo "Loading environment variables from .env file"
+          cat .env
+        shell: bash
+
       - name: Build with Maven
         run: mvn clean install -DskipTests
+        env:
+          DB_KIND: ${{ secrets.DB_KIND }}
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_DATABASE: ${{ secrets.DB_DATABASE }}
+          DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
