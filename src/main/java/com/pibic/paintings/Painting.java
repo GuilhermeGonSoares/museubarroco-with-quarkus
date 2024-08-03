@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "paintings")
@@ -27,12 +28,12 @@ public class Painting {
     private String bibliographySource;
     private String bibliographyReference;
     private String placement;
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinTable(name = "painting_images",
             joinColumns = @JoinColumn(name = "painting_id"),
             inverseJoinColumns = @JoinColumn(name = "image_id"))
     private List<Image> images = new ArrayList<>();
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "painting_id", referencedColumnName = "id")
     private List<Engraving> engravings = new ArrayList<>();
     @ManyToOne
@@ -46,7 +47,7 @@ public class Painting {
             joinColumns = @JoinColumn(name = "painting_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
     private Set<Tag> tags = new HashSet<>();
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE})
     @JoinColumn(name = "painting_id", referencedColumnName = "id")
     private List<Suggestion> suggestions = new ArrayList<>();
 
@@ -85,6 +86,13 @@ public class Painting {
 
     @PrePersist
     public void prePersist(){
+        for (var image : images){
+            image.setType("painting");
+        }
+    }
+
+    @PreUpdate
+    public void preUpdate(){
         for (var image : images){
             image.setType("painting");
         }
@@ -154,8 +162,12 @@ public class Painting {
             throw new IllegalArgumentException("Painting must have at least one image");
         }
         if (engravingUrlsToRemove != null) {
-            this.engravings.removeIf(engraving -> engravingUrlsToRemove.contains(engraving.getUrl()));
+            List<Engraving> toRemove = this.engravings.stream()
+                    .filter(engraving -> engravingUrlsToRemove.contains(engraving.getUrl()))
+                    .collect(Collectors.toList());
+            this.engravings.removeAll(toRemove);
         }
+
         this.title = title;
         this.description = description;
         this.artisan = artisan;

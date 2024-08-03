@@ -29,6 +29,18 @@
     alter table paintings 
        drop constraint FK3sbwj77ow6k6ufdesaynrwls1;
 
+    alter table suggestion_images 
+       drop constraint FK5kvownl21m4x4gxpt7t7vm4j7;
+
+    alter table suggestion_images 
+       drop constraint FK6sar44lry9fb01yk1ugutrq1h;
+
+    alter table suggestions 
+       drop constraint FK7yns86oadd04hrdcstg7mhirm;
+
+    alter table suggestions 
+       drop constraint FKriyx467shlqlqlytjugugvitp;
+
     alter table tags 
        drop constraint FKpsynysaxl7cyw8mr5c8xevneg;
 
@@ -46,6 +58,10 @@
 
     drop table paintings;
 
+    drop table suggestion_images;
+
+    drop table suggestions;
+
     drop table tags;
 
     drop table users;
@@ -57,6 +73,8 @@
     drop sequence images_seq;
 
     drop sequence paintings_seq;
+
+    drop sequence suggestions_seq;
 
     drop sequence tags_seq;
 

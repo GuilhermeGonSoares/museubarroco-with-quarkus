@@ -26,7 +26,7 @@ public class Suggestion {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinTable(name = "suggestion_images",
             joinColumns = @JoinColumn(name = "suggestion_id"),
             inverseJoinColumns = @JoinColumn(name = "image_id"))
@@ -44,6 +44,13 @@ public class Suggestion {
 
     @PrePersist
     public void prePersist(){
+        for (var image : images){
+            image.setType("suggestion");
+        }
+    }
+
+    @PreUpdate
+    public void preUpdate(){
         for (var image : images){
             image.setType("suggestion");
         }

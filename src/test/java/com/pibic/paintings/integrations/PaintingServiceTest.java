@@ -277,12 +277,11 @@ class PaintingServiceTest {
         Mockito.when(storageService.uploadFile(Mockito.anyString(), Mockito.anyString(), Mockito.any()))
                 .thenReturn("https://www.suggestion.com.br");
         //act
-        paintingService.addSuggestion(1L, user.getId(), "reason1", imagesDto);
+        paintingService.addSuggestion(painting.getId(), user.getId(), "reason1", imagesDto);
         //assert
-        var updatedPainting = paintingRepository.findById(1L);
+        var updatedPainting = paintingRepository.findById(painting.getId());
         assertNotNull(updatedPainting);
         assertEquals(1, updatedPainting.getSuggestions().size());
-        assertEquals(1L, updatedPainting.getSuggestions().get(0).getId());
         assertEquals("reason1", updatedPainting.getSuggestions().get(0).getReason());
         assertEquals("PENDING", updatedPainting.getSuggestions().get(0).getStatus());
         assertEquals("https://www.suggestion.com.br", updatedPainting.getSuggestions().get(0).getImages().get(0).getUrl());

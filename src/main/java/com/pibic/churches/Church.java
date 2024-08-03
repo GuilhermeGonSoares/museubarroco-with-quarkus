@@ -27,7 +27,7 @@ public class Church {
     @ManyToOne
     @JoinColumn(name = "registered_by")
     private User registeredBy;
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinTable(name = "church_images",
             joinColumns = @JoinColumn(name = "church_id"),
             inverseJoinColumns = @JoinColumn(name = "image_id"))
@@ -98,6 +98,13 @@ public class Church {
 
     @PrePersist
     public void prePersist() {
+        for (var image : images) {
+            image.setType("church");
+        }
+    }
+
+    @PreUpdate
+    public void preUpdate() {
         for (var image : images) {
             image.setType("church");
         }

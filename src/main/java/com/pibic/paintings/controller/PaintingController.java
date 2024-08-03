@@ -92,4 +92,18 @@ public class PaintingController {
         paintingService.deletePainting(id, userId);
         return Response.noContent().build();
     }
+
+    @PATCH
+    @Path("{id}/add-suggestion")
+    public Response addSuggestion(@PathParam("id") Long id, @Valid AddSuggestionRequest addSuggestionRequest){
+        paintingService.addSuggestion(
+                id,
+                51L,
+                addSuggestionRequest.reason(),
+                addSuggestionRequest.images()
+                        .stream()
+                        .map(i -> new ImageDto(i.base64Image(), i.photographer())).toList()
+        );
+        return Response.ok().build();
+    }
 }

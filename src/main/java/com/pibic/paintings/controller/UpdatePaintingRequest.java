@@ -2,6 +2,7 @@ package com.pibic.paintings.controller;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
 
@@ -14,7 +15,7 @@ public record UpdatePaintingRequest(
         List<String> bibliographyReference,
         String placement,
         String artisan,
-        @NotBlank(message = "Church ID is required")
+        @NotNull(message = "Church ID is required")
         Long churchId,
         List<String> urlImagesToRemove,
         List<@Valid ImagePaintingRequest> images,

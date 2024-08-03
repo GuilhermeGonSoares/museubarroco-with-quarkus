@@ -7,6 +7,8 @@
 
     create sequence paintings_seq start with 1 increment by 50;
 
+    create sequence suggestions_seq start with 1 increment by 50;
+
     create sequence tags_seq start with 1 increment by 50;
 
     create sequence users_seq start with 1 increment by 50;
@@ -72,6 +74,21 @@
         primary key (id)
     );
 
+    create table suggestion_images (
+        image_id bigint not null,
+        suggestion_id bigint not null
+    );
+
+    create table suggestions (
+        id bigint not null,
+        painting_id bigint,
+        user_id bigint,
+        reason varchar(255) not null,
+        response varchar(255),
+        status varchar(255) not null check (status in ('PENDING','ANSWERED')),
+        primary key (id)
+    );
+
     create table tags (
         is_published bit not null,
         id bigint not null,
@@ -94,6 +111,9 @@
 
     alter table painting_images 
        add constraint UKgen1nchodrk13jdgx2xuotmri unique (image_id);
+
+    alter table suggestion_images 
+       add constraint UKetsmcibebreivqhn2lxtf0f5p unique (image_id);
 
     alter table church_images 
        add constraint FK7e1akn1h3j4oufc136lfy3dqh 
@@ -144,6 +164,26 @@
        add constraint FK3sbwj77ow6k6ufdesaynrwls1 
        foreign key (registered_by) 
        references users;
+
+    alter table suggestion_images 
+       add constraint FK5kvownl21m4x4gxpt7t7vm4j7 
+       foreign key (image_id) 
+       references images;
+
+    alter table suggestion_images 
+       add constraint FK6sar44lry9fb01yk1ugutrq1h 
+       foreign key (suggestion_id) 
+       references suggestions;
+
+    alter table suggestions 
+       add constraint FK7yns86oadd04hrdcstg7mhirm 
+       foreign key (user_id) 
+       references users;
+
+    alter table suggestions 
+       add constraint FKriyx467shlqlqlytjugugvitp 
+       foreign key (painting_id) 
+       references paintings;
 
     alter table tags 
        add constraint FKpsynysaxl7cyw8mr5c8xevneg 
