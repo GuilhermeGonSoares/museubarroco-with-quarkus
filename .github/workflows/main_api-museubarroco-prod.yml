@@ -22,21 +22,16 @@ jobs:
           java-version: '21'
           distribution: 'microsoft'
 
-      - name : Load enviroment variables from .env
+      - name: Set up environment variables
         run: |
-          echo "Loading environment variables from .env file"
-          cat .env
-        shell: bash
+          echo "DB_KIND=${{ secrets.DB_KIND_PROD }}" >> $GITHUB_ENV
+          echo "DB_HOST=${{ secrets.DB_HOST }}" >> $GITHUB_ENV
+          echo "DB_DATABASE=${{ secrets.DB_DATABASE }}" >> $GITHUB_ENV
+          echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> $GITHUB_ENV
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> $GITHUB_ENV
 
       - name: Build with Maven
         run: mvn clean install -DskipTests
-        env:
-          DB_KIND: ${{ secrets.DB_KIND }}
-          DB_HOST: ${{ secrets.DB_HOST }}
-          DB_DATABASE: ${{ secrets.DB_DATABASE }}
-          DB_USERNAME: ${{ secrets.DB_USERNAME }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
-
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
@@ -52,13 +47,13 @@ jobs:
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
     permissions:
       id-token: write
-  
+
     steps:
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
         with:
           name: java-app
-      
+
       - name: Login to Azure
         uses: azure/login@v2
         with:
@@ -73,4 +68,3 @@ jobs:
           app-name: 'api-museubarroco-prod'
           slot-name: 'Production'
           package: '*.jar'
-          
