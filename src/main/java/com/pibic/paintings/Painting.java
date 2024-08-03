@@ -195,6 +195,17 @@ public class Painting {
         this.suggestions.add(suggestion);
     }
 
+    public void addAnswerToSuggestion(Long suggestionId, String answer){
+        if (!isPublished){
+            throw new IllegalArgumentException("Painting must be published to receive suggestions");
+        }
+        var suggestion = this.suggestions.stream()
+                .filter(s -> s.getId().equals(suggestionId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Suggestion not found"));
+        suggestion.addAnswer(answer);
+    }
+
 
     public void publish() {
         isPublished = true;

@@ -106,4 +106,15 @@ public class PaintingController {
         );
         return Response.ok().build();
     }
+
+    @PATCH
+    @Path("{id}/add-answer-to-suggestion/{suggestionId}")
+    public Response addAnswerToSuggestion(
+            @PathParam("id") Long id,
+            @PathParam("suggestionId") Long suggestionId,
+            @Valid AddAnswer answer
+    ){
+        paintingService.addAnswerToSuggestion(id, suggestionId, answer.response());
+        return Response.ok().build();
+    }
 }

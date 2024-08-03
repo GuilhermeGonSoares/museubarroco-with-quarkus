@@ -56,7 +56,7 @@ public class Suggestion {
         }
     }
 
-    public void Answer(String message){
+    public void addAnswer(String message){
         if (status == Status.PENDING){
             response = message;
             images.clear();

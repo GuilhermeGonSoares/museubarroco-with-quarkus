@@ -143,6 +143,14 @@ public class PaintingService {
         painting.addSuggestion(suggestion);
     }
 
+    @Transactional
+    public void addAnswerToSuggestion(Long id, Long suggestionId, String message){
+        var painting = paintingRepository.findById(id);
+        if (painting == null)
+            throw new NotFoundException("Painting not found");
+        painting.addAnswerToSuggestion(suggestionId, message);
+    }
+
     private PaintingResponse mappingToResponse(Painting painting) {
         return new PaintingResponse(
                 painting.getId(),
