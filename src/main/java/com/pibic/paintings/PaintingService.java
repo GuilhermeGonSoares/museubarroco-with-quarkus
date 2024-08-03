@@ -131,6 +131,18 @@ public class PaintingService {
         painting.getEngravings().forEach(engraving -> storageService.deleteFile(BLOB_CONTAINER_ENGRAVING, engraving.getUrl()));
     }
 
+    @Transactional
+    public void addSuggestion(Long id, Long userId, String reason, List<ImageDto> images){
+        var painting = paintingRepository.findById(id);
+        if (painting == null)
+            throw new NotFoundException("Painting not found");
+        var user = userRepository.findById(userId);
+        if (user == null)
+            throw new NotFoundException("User not found");
+        var suggestion = new Suggestion(reason, user, getImageWithUrls(painting.getTitle(), images));
+        painting.addSuggestion(suggestion);
+    }
+
     private PaintingResponse mappingToResponse(Painting painting) {
         return new PaintingResponse(
                 painting.getId(),

@@ -3,10 +3,7 @@ package com.pibic.paintings.integrations;
 import com.pibic.churches.Address;
 import com.pibic.churches.Church;
 import com.pibic.churches.ChurchRepository;
-import com.pibic.paintings.Engraving;
-import com.pibic.paintings.Painting;
-import com.pibic.paintings.PaintingRepository;
-import com.pibic.paintings.PaintingService;
+import com.pibic.paintings.*;
 import com.pibic.paintings.dtos.CreatePaintingDto;
 import com.pibic.paintings.dtos.EngravingDto;
 import com.pibic.paintings.dtos.ImageDto;
@@ -156,7 +153,7 @@ class PaintingServiceTest {
                 List.of("https://www.painting.com.br"),
                 List.of(new ImageDto("base64Painting", "Yan Tavares")),
                 List.of("https://www.engraving.com.br"),
-                List.of(new EngravingDto("gravura de anjo", "base64Engraving", "Yan Tavares")),
+                List.of(new EngravingDto("gravura de anjo2", "base64Engraving", "Yan Tavares")),
                 List.of(tag.getId(), 10L, 20L),
                 church.getId(),
                 user.getId()
@@ -253,7 +250,48 @@ class PaintingServiceTest {
         assertNull(deletedPainting);
     }
 
-    private Painting createPainting(User user, Church church, Tag tag){
+    @Test
+    @TestTransaction
+    public void ShouldAddSuggestionToPublishedPainting(){
+        //arrange
+        var user = createUser(false);
+        var church = createChurch(user);
+        var tag = createTag(user);
+        var painting = Painting.create(
+                "Pintura",
+                "Pintura de anjo",
+                "GuiGo",
+                "2021-08-01",
+                "bibliografia",
+                "referencia",
+                "Parede da igreja",
+                church,
+                user,
+                List.of(new Image("https://www.painting.com.br", "Yan Tavares")),
+                List.of(new Engraving("gravura de anjo", "Yan Tavares", "https://www.engraving.com.br")),
+                List.of(tag)
+        );
+        painting.publish();
+        paintingRepository.persist(painting);
+        var imagesDto = List.of(new ImageDto("base64Image", "Yan Tavares"));
+        Mockito.when(storageService.uploadFile(Mockito.anyString(), Mockito.anyString(), Mockito.any()))
+                .thenReturn("https://www.suggestion.com.br");
+        //act
+        paintingService.addSuggestion(1L, user.getId(), "reason1", imagesDto);
+        //assert
+        var updatedPainting = paintingRepository.findById(1L);
+        assertNotNull(updatedPainting);
+        assertEquals(1, updatedPainting.getSuggestions().size());
+        assertEquals(1L, updatedPainting.getSuggestions().get(0).getId());
+        assertEquals("reason1", updatedPainting.getSuggestions().get(0).getReason());
+        assertEquals("PENDING", updatedPainting.getSuggestions().get(0).getStatus());
+        assertEquals("https://www.suggestion.com.br", updatedPainting.getSuggestions().get(0).getImages().get(0).getUrl());
+    }
+
+    private Painting createPainting(User user,
+                                    Church church,
+                                    Tag tag
+    ){
         var painting = Painting.create(
                 "Pintura",
                 "Pintura de anjo",

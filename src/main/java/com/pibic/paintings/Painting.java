@@ -177,10 +177,10 @@ public class Painting {
         if (suggestedBy.isAdmin() || !suggestedBy.getId().equals(registeredBy.getId())){
             throw new IllegalArgumentException("Only the user who registered the painting can suggest changes");
         }
-        if (suggestions.stream().anyMatch(s -> s.getId().equals(suggestion.getId()))){
+        if (this.suggestions.stream().anyMatch(s -> s.getId().equals(suggestion.getId()))){
             throw new IllegalArgumentException("Suggestion already added");
         }
-        suggestions.add(suggestion);
+        this.suggestions.add(suggestion);
     }
 
 

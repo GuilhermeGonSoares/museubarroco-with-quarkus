@@ -37,8 +37,16 @@ public class Suggestion {
 
     public Suggestion(String reason, User user, List<Image> images) {
         this.reason = reason;
+        this.status = Status.PENDING;
         this.user = user;
         this.images.addAll(images);
+    }
+
+    @PrePersist
+    public void prePersist(){
+        for (var image : images){
+            image.setType("suggestion");
+        }
     }
 
     public void Answer(String message){
@@ -61,8 +69,8 @@ public class Suggestion {
         return response;
     }
 
-    public Status getStatus() {
-        return status;
+    public String getStatus() {
+        return status.name();
     }
 
     public List<Image> getImages() {
