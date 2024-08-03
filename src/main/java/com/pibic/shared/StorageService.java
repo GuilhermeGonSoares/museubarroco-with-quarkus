@@ -19,7 +19,7 @@ public class StorageService implements IStorageService {
     private final BlobServiceClient blobServiceClient;
 
     @Inject
-    public StorageService(@ConfigProperty(name = "azure.blob-storage.connection") String connectionString) {
+    public StorageService(@ConfigProperty(name = "AZURE_STORAGE_CONNECTION") String connectionString) {
         blobServiceClient = new BlobServiceClientBuilder()
                 .connectionString(connectionString)
                 .buildClient();

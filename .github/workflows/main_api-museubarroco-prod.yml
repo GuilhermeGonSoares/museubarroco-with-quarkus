@@ -24,11 +24,12 @@ jobs:
 
       - name: Set up environment variables
         run: |
-          echo "DB_KIND=${{ secrets.DB_KIND_PROD }}" >> $GITHUB_ENV
+          echo "DB_KIND=${{ secrets.DB_KIND }}" >> $GITHUB_ENV
           echo "DB_HOST=${{ secrets.DB_HOST }}" >> $GITHUB_ENV
           echo "DB_DATABASE=${{ secrets.DB_DATABASE }}" >> $GITHUB_ENV
           echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> $GITHUB_ENV
           echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> $GITHUB_ENV
+          echo "AZURE_STORAGE_CONNECTION=${{ secrets.AZURE_STORAGE_CONNECTION }}" >> $GITHUB_ENV
 
       - name: Build with Maven
         run: mvn clean install -DskipTests
