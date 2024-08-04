@@ -34,11 +34,14 @@ jobs:
       - name: Build with Maven
         run: mvn clean install -DskipTests
 
+      - name: Compress Fast-Jar
+        run: zip -r quarkus-app.zip target/quarkus-app
+
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: java-app
-          path: '${{ github.workspace }}/target/*.jar'
+          path: quarkus-app.zip
 
   deploy:
     runs-on: ubuntu-latest
@@ -55,6 +58,12 @@ jobs:
         with:
           name: java-app
 
+      - name: Unzip Fast-Jar
+        run: unzip quarkus-app.zip
+
+      - name: List Files for Debugging
+        run: ls -R .
+
       - name: Login to Azure
         uses: azure/login@v2
         with:
@@ -68,4 +77,4 @@ jobs:
         with:
           app-name: 'api-museubarroco-prod'
           slot-name: 'Production'
-          package: '*.jar'
+          package: 'target/quarkus-app'
