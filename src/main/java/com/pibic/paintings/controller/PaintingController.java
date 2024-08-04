@@ -5,12 +5,15 @@ import com.pibic.paintings.dtos.CreatePaintingDto;
 import com.pibic.paintings.dtos.EngravingDto;
 import com.pibic.paintings.dtos.ImageDto;
 import com.pibic.paintings.dtos.UpdatePaintingDto;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import org.eclipse.microprofile.jwt.JsonWebToken;
 
 @Path("/api/paintings")
 @Produces(MediaType.APPLICATION_JSON)
@@ -19,7 +22,9 @@ import jakarta.ws.rs.core.Response;
 public class PaintingController {
     @Inject
     PaintingService paintingService;
-    private static final Long userId = 1L;
+    @Context
+    JsonWebToken jwt;
+
 
     @GET
     public Response getPaintings() {
@@ -32,8 +37,10 @@ public class PaintingController {
         return Response.ok(paintingService.getPaintingById(id)).build();
     }
 
+    @RolesAllowed({"admin", "user"})
     @POST
     public Response createPainting(@Valid CreatePaintingRequest createPaintingRequest){
+        Long userId = Long.parseLong(jwt.getClaim("id").toString());
         var paintingDto = new CreatePaintingDto(
                 createPaintingRequest.title(),
                 createPaintingRequest.description(),
@@ -58,9 +65,11 @@ public class PaintingController {
                     .build();
     }
 
+    @RolesAllowed({"admin", "user"})
     @PUT
     @Path("{id}")
     public Response updatePainting(@PathParam("id") Long id, @Valid UpdatePaintingRequest updatePaintingRequest){
+        Long userId = Long.parseLong(jwt.getClaim("id").toString());
         var paintingDto = new UpdatePaintingDto(
                 id,
                 updatePaintingRequest.title(),
@@ -86,19 +95,23 @@ public class PaintingController {
         return Response.ok().build();
     }
 
+    @RolesAllowed({"admin", "user"})
     @DELETE
     @Path("{id}")
     public Response deletePainting(@PathParam("id") Long id){
+        Long userId = Long.parseLong(jwt.getClaim("id").toString());
         paintingService.deletePainting(id, userId);
         return Response.noContent().build();
     }
 
+    @RolesAllowed({"user"})
     @PATCH
     @Path("{id}/add-suggestion")
     public Response addSuggestion(@PathParam("id") Long id, @Valid AddSuggestionRequest addSuggestionRequest){
+        Long userId = Long.parseLong(jwt.getClaim("id").toString());
         paintingService.addSuggestion(
                 id,
-                51L,
+                userId,
                 addSuggestionRequest.reason(),
                 addSuggestionRequest.images()
                         .stream()
@@ -107,6 +120,7 @@ public class PaintingController {
         return Response.ok().build();
     }
 
+    @RolesAllowed({"admin"})
     @PATCH
     @Path("{id}/add-answer-to-suggestion/{suggestionId}")
     public Response addAnswerToSuggestion(

@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 @Table(name = "paintings")
 public class Painting {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     @Column(nullable = false)
     private String title;

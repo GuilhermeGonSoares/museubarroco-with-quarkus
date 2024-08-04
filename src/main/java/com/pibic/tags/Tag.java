@@ -9,7 +9,7 @@ import java.util.Objects;
 @Table(name = "tags")
 public class Tag {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String name;
     private boolean isPublished;
