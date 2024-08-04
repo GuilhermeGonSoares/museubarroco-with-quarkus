@@ -44,12 +44,6 @@ public class UserController {
     @GET()
     @RolesAllowed({"admin"})
     public Response getUsers() {
-        Long userId = Long.valueOf(jwt.getClaim("id").toString());
-        var x = jwt.getClaim("groups");
-        var y = jwt.getExpirationTime();
-        String userName = jwt.getClaim("name");
-        String userEmail = jwt.getClaim("upn");
-
         return Response.ok(userServices.listAllUsers()).build();
     }
 }
