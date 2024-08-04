@@ -1,6 +1,6 @@
 package com.pibic.paintings;
 
-import com.pibic.shared.Image;
+import com.pibic.shared.images.Image;
 import com.pibic.users.User;
 import jakarta.persistence.*;
 

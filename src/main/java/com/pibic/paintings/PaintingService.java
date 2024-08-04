@@ -2,8 +2,8 @@ package com.pibic.paintings;
 
 import com.pibic.churches.ChurchRepository;
 import com.pibic.paintings.dtos.*;
-import com.pibic.shared.Image;
-import com.pibic.shared.ImageHelper;
+import com.pibic.shared.images.Image;
+import com.pibic.shared.images.ImageHelper;
 import com.pibic.shared.abstraction.IStorageService;
 import com.pibic.tags.TagRepository;
 import com.pibic.tags.dtos.TagDto;

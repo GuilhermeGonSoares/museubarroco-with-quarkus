@@ -161,7 +161,10 @@ public class TagServiceTest {
     private User createUser(boolean isAdmin) {
         var user = User.create("John Doe",
                 "johndoe@email.com",
-                "123456", isAdmin, true);
+                "123456", true);
+        if (isAdmin) {
+            user.setAdmin(true);
+        }
         userRepository.persist(user);
         return user;
     }

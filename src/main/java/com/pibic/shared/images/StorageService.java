@@ -1,4 +1,4 @@
-package com.pibic.shared;
+package com.pibic.shared.images;
 
 import com.azure.storage.blob.BlobServiceClient;
 import com.azure.storage.blob.BlobServiceClientBuilder;
@@ -9,7 +9,6 @@ import jakarta.inject.Inject;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import java.io.InputStream;
-import java.nio.file.Paths;
 
 
 @ApplicationScoped

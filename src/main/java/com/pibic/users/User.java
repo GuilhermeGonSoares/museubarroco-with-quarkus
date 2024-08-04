@@ -19,18 +19,18 @@ public class User {
     public User() {
     }
 
-    private User(String name, String email, String password, boolean isAdmin) {
+    private User(String name, String email, String password) {
         this.name = name;
         this.email = email;
         this.password = password;
-        this.isAdmin = isAdmin;
+        this.isAdmin = false;
     }
 
-    public static User create(String name, String email, String password, boolean isAdmin, boolean isEmailUnique) {
+    public static User create(String name, String email, String password, boolean isEmailUnique) {
         if (!isEmailUnique) {
             throw new IllegalArgumentException("Email already in use");
         }
-        return new User(name, email, password, isAdmin);
+        return new User(name, email, password);
     }
 
     public void setId(Long id) {
@@ -55,5 +55,9 @@ public class User {
 
     public boolean isAdmin() {
         return isAdmin;
+    }
+
+    public void setAdmin(boolean isAdmin) {
+        this.isAdmin = isAdmin;
     }
 }

@@ -1,9 +1,8 @@
 package com.pibic.users.dtos;
 
-public record CreateUserDto(
+public record RegisterUserDto(
     String name,
     String email,
-    String password,
-    boolean isAdmin
+    String password
 )
 { }

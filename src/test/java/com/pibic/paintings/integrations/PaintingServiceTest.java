@@ -8,7 +8,7 @@ import com.pibic.paintings.dtos.CreatePaintingDto;
 import com.pibic.paintings.dtos.EngravingDto;
 import com.pibic.paintings.dtos.ImageDto;
 import com.pibic.paintings.dtos.UpdatePaintingDto;
-import com.pibic.shared.Image;
+import com.pibic.shared.images.Image;
 import com.pibic.shared.abstraction.IStorageService;
 import com.pibic.tags.Tag;
 import com.pibic.tags.TagRepository;
@@ -310,14 +310,13 @@ class PaintingServiceTest {
     }
 
 
-    private User createUser(boolean isAdmin){
-        var user = User.create(
-                "GuiGo",
-                "guigo@email.com",
-                "123456",
-                isAdmin,
-                true
-        );
+    private User createUser(boolean isAdmin) {
+        var user = User.create("John Doe",
+                "johndoe@email.com",
+                "123456", true);
+        if (isAdmin) {
+            user.setAdmin(true);
+        }
         userRepository.persist(user);
         return user;
     }

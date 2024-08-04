@@ -1,4 +1,4 @@
-package com.pibic.shared;
+package com.pibic.shared.images;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;

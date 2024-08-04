@@ -3,12 +3,11 @@ package com.pibic.users.integrations;
 import com.pibic.users.User;
 import com.pibic.users.UserRepository;
 import com.pibic.users.UserServices;
-import com.pibic.users.dtos.CreateUserDto;
+import com.pibic.users.dtos.RegisterUserDto;
 import io.quarkus.test.TestTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -30,30 +29,12 @@ class UserServicesTest {
     @Test
     @TestTransaction
     public void ShouldCreateUser(){
-        var createUserDto = new CreateUserDto(
+        var createUserDto = new RegisterUserDto(
                 "John Doe",
                 "johndoe@email.com",
-                "123456",
-                true
+                "123456"
         );
-        var expected = userServices.createUser(createUserDto);
-        assertNotNull(expected);
-        assertNotNull(expected.getId());
-        assertEquals(expected.getName(), createUserDto.name());
-        assertEquals(expected.getEmail(), createUserDto.email());
-        assertTrue(expected.isAdmin());
-    }
-
-    @Test
-    @TestTransaction
-    public void ShouldCreateNonAdminUser() {
-        var createUserDto = new CreateUserDto(
-                "John Doe",
-                "johndoe@email.com",
-                "123456",
-                false
-        );
-        var expected = userServices.createUser(createUserDto);
+        var expected = userServices.registerUser(createUserDto);
         assertNotNull(expected);
         assertNotNull(expected.getId());
         assertEquals(expected.getName(), createUserDto.name());
@@ -61,24 +42,23 @@ class UserServicesTest {
         assertFalse(expected.isAdmin());
     }
 
+
     @Test
     @TestTransaction
     public void ShouldNotCreateUserWithSameEmail() {
-        var createUserDto = new CreateUserDto(
+        var createUserDto = new RegisterUserDto(
                 "Tainara",
                 "tai@email.com",
-                "123456",
-                true
+                "123456"
         );
-        var createUserDto2 = new CreateUserDto(
+        var createUserDto2 = new RegisterUserDto(
                 "Jane",
                 "tai@email.com",
-                "123456",
-                true
+                "123456"
         );
         assertThrows(IllegalArgumentException.class, () -> {
-            userServices.createUser(createUserDto);
-            userServices.createUser(createUserDto2);
+            userServices.registerUser(createUserDto);
+            userServices.registerUser(createUserDto2);
         });
     }
 
@@ -90,10 +70,10 @@ class UserServicesTest {
         assertTrue(users.isEmpty());
         userRepository.persist(User.create("Jane D",
                 "jane@email.com",
-                "123456", false, true));
+                "123456", true));
         userRepository.persist(User.create("John Doe",
                 "johndoe@email.com",
-                "123456", true, true));
+                "123456",  true));
         users = userServices.listAllUsers();
         assertNotNull(users);
         assertFalse(users.isEmpty());
@@ -105,7 +85,7 @@ class UserServicesTest {
     public void ShouldReturnUserByEmail() {
         userRepository.persist(User.create("Tainara",
                 "tai@email.com",
-                "123456", false, true));
+                "123456", true));
         User result = userServices.findByEmail("tai@email.com");
         assertNotNull(result);
         assertEquals("Tainara", result.getName());

@@ -1,7 +1,7 @@
 package com.pibic.paintings;
 
 import com.pibic.churches.Church;
-import com.pibic.shared.Image;
+import com.pibic.shared.images.Image;
 import com.pibic.tags.Tag;
 import com.pibic.users.User;
 import jakarta.persistence.*;

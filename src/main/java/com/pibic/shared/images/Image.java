@@ -1,4 +1,4 @@
-package com.pibic.shared;
+package com.pibic.shared.images;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

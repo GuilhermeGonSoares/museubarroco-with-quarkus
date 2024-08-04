@@ -12,7 +12,7 @@ class UserTest {
     public void ShouldCreateUser(){
         var user = User.create("John Doe",
                 "johndoe@email.com",
-                "123456", false, true);
+                "123456", true);
         assertNotNull(user);
         assertEquals("John Doe", user.getName());
     }
@@ -22,7 +22,7 @@ class UserTest {
         assertThrows(IllegalArgumentException.class, () -> {
             User.create("John Doe",
                     "johndoe@email.com",
-                    "123456", false, false);
+                    "123456", false);
         });
         }
 

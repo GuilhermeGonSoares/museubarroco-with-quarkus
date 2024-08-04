@@ -5,7 +5,7 @@ import com.pibic.churches.Church;
 import com.pibic.paintings.Engraving;
 import com.pibic.paintings.Painting;
 import com.pibic.paintings.Suggestion;
-import com.pibic.shared.Image;
+import com.pibic.shared.images.Image;
 import com.pibic.tags.Tag;
 import com.pibic.users.User;
 import io.quarkus.test.junit.QuarkusTest;
@@ -450,13 +450,15 @@ class PaintingTest {
     }
 
     private User createUser(boolean isAdmin){
-        return User.create(
+        var user = User.create(
                 "GuiGo",
                 "guigo@email.com",
                 "123456",
-                isAdmin,
                 true
         );
+        if (isAdmin)
+            user.setAdmin(true);
+        return user;
     }
 
     private Church createChurch(User user){

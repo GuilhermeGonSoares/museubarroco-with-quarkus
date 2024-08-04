@@ -63,9 +63,15 @@ class TagTest {
         assertThrows(IllegalArgumentException.class, () -> tag.updateName("Java", false, user));
     }
 
-    private final User createUser(boolean isAdmin) {
-        return User.create("John Doe",
-                "johndoe@email.com",
-                "123456", isAdmin, true);
+    private User createUser(boolean isAdmin){
+        var user = User.create(
+                "GuiGo",
+                "guigo@email.com",
+                "123456",
+                true
+        );
+        if (isAdmin)
+            user.setAdmin(true);
+        return user;
     }
 }
