@@ -131,4 +131,12 @@ public class PaintingController {
         paintingService.addAnswerToSuggestion(id, suggestionId, answer.response());
         return Response.ok().build();
     }
+
+    @RolesAllowed({"admin"})
+    @PATCH
+    @Path("{id}/publish")
+    public Response publishPainting(@PathParam("id") Long id){
+        paintingService.publishPainting(id);
+        return Response.ok().build();
+    }
 }
