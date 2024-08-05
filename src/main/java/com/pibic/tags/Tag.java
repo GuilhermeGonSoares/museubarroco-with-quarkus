@@ -58,7 +58,7 @@ public class Tag {
         if(isPublished && !updatedBy.isAdmin()) {
             throw new IllegalArgumentException("Only admin can update published tag name");
         }
-        if (!updatedBy.isAdmin() && !(updatedBy.getId() == user.getId())) {
+        if (!updatedBy.isAdmin() && !(updatedBy.getId().equals(user.getId()))) {
             throw new IllegalArgumentException("Only admin or tag owner can update published tag name");
         }
         if (!isUniqueName) {
@@ -67,9 +67,8 @@ public class Tag {
         this.name = name;
     }
 
-    public void publish(boolean isAdmin) {
-        if (isAdmin)
-            this.isPublished = true;
+    public void publish() {
+        this.isPublished = true;
     }
 
     @Override

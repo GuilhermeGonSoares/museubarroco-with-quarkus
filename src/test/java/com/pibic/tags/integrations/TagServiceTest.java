@@ -110,7 +110,7 @@ public class TagServiceTest {
     public void ShouldNotUpdateTagByOwnerWhenIsPublished(){
         var user = createUser(false);
         var tag = Tag.create("Java", user, true);
-        tag.publish(true);
+        tag.publish();
         tagRepository.persist(tag);
         assertThrows(IllegalArgumentException.class, () -> tagServices.updateTag(tag.getId(), "Quarkus", user.getId()));
     }
@@ -140,7 +140,7 @@ public class TagServiceTest {
         var user = createUser(false);
         var admin = createUser(true);
         var tag = Tag.create("Java", user, true);
-        tag.publish(true);
+        tag.publish();
         tagRepository.persist(tag);
         assertThrows(IllegalArgumentException.class, () -> tagServices.deleteTag(tag.getId(), user.getId()));
         tagServices.deleteTag(tag.getId(), admin.getId());

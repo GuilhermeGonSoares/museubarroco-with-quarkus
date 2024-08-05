@@ -42,7 +42,9 @@ class TagTest {
     public void ShouldUpdateNameNonAdminWhenUnPublished()
     {
         var user = createUser(false);
+        user.setId(1L);
         var tag = Tag.create("Java", user, true);
+        tag.setId(1L);
         tag.updateName("Java 8", true, user);
         assertEquals("Java 8", tag.getName());
     }

@@ -5,6 +5,7 @@ import com.pibic.paintings.dtos.*;
 import com.pibic.shared.images.Image;
 import com.pibic.shared.images.ImageHelper;
 import com.pibic.shared.abstraction.IStorageService;
+import com.pibic.tags.Tag;
 import com.pibic.tags.TagRepository;
 import com.pibic.tags.dtos.TagDto;
 import com.pibic.users.UserRepository;
@@ -129,6 +130,25 @@ public class PaintingService {
         paintingRepository.delete(painting);
         painting.getImages().forEach(image -> storageService.deleteFile(BLOB_CONTAINER_PAINTING, image.getUrl()));
         painting.getEngravings().forEach(engraving -> storageService.deleteFile(BLOB_CONTAINER_ENGRAVING, engraving.getUrl()));
+    }
+
+    @Transactional
+    public void publishPainting(Long id){
+        var painting = paintingRepository.find(
+                    "from Painting p " +
+                            "left join fetch p.church c " +
+                            "left join fetch p.tags t " +
+                            "where p.id = ?1 and p.isPublished = false ",
+                    id
+                )
+                .firstResultOptional()
+                .orElseThrow(() -> new NotFoundException("Painting not found"));
+        painting.publish();
+        painting.getChurch().publish();
+        painting.getTags()
+                .stream()
+                .filter(t -> !t.isPublished())
+                .forEach(Tag::publish);
     }
 
     @Transactional
