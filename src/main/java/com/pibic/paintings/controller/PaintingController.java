@@ -44,11 +44,11 @@ public class PaintingController {
         var paintingDto = new CreatePaintingDto(
                 createPaintingRequest.title(),
                 createPaintingRequest.description(),
+                createPaintingRequest.artisan(),
                 createPaintingRequest.dateOfCreation(),
                 createPaintingRequest.bibliographySource(),
                 String.join(";", createPaintingRequest.bibliographyReference()),
                 createPaintingRequest.placement(),
-                createPaintingRequest.artisan(),
                 createPaintingRequest.churchId(),
                 userId,
                 createPaintingRequest.images()
