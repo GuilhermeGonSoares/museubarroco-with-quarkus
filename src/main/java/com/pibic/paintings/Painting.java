@@ -39,7 +39,7 @@ public class Painting {
     @ManyToOne
     @JoinColumn(name = "church_id")
     private Church church;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "registered_by")
     private User registeredBy;
     @ManyToMany

@@ -24,7 +24,7 @@ public class Church {
     private String bibliographyReferences;
     @Column(nullable = false)
     private boolean isPublished;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "registered_by")
     private User registeredBy;
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
@@ -144,5 +144,13 @@ public class Church {
 
     public List<Image> getImages() {
         return images;
+    }
+
+    public List<Painting> getPaintings() {
+        return paintings;
+    }
+
+    public void setPaintings(List<Painting> paintings) {
+        this.paintings = paintings;
     }
 }

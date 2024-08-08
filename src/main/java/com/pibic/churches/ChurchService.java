@@ -1,9 +1,7 @@
 package com.pibic.churches;
 
-import com.pibic.churches.dtos.ChurchResponse;
-import com.pibic.churches.dtos.ChurchImageDto;
-import com.pibic.churches.dtos.CreateChurchDto;
-import com.pibic.churches.dtos.UpdateChurchDto;
+import com.pibic.churches.dtos.*;
+import com.pibic.paintings.PaintingRepository;
 import com.pibic.shared.images.Image;
 import com.pibic.shared.images.ImageHelper;
 import com.pibic.shared.abstraction.IStorageService;
@@ -20,6 +18,8 @@ public class ChurchService {
     private static final String BLOB_CONTAINER = "churches";
     @Inject
     ChurchRepository churchRepository;
+    @Inject
+    PaintingRepository paintingRepository;
     @Inject
     UserRepository userRepository;
     @Inject
@@ -44,40 +44,32 @@ public class ChurchService {
     }
 
     public ChurchResponse getChurch(Long id) {
-        var church = churchRepository.find("id = ?1 and isPublished = true", id).firstResult();
+        var church = churchRepository.find("""
+                SELECT c FROM Church c
+                LEFT JOIN FETCH c.images i
+                WHERE c.id = ?1 AND c.isPublished = true
+                """, id).firstResult();
         if (church == null) {
            throw new NotFoundException("Church not found");
         }
-        return new ChurchResponse(
-                church.getId(),
-                church.getName(),
-                church.getDescription(),
-                church.getBibliographyReferences(),
-                church.getAddress().street(),
-                church.getAddress().city(),
-                church.getAddress().state(),
-                church.getImages().stream()
-                        .map(image -> new ChurchImageDto(image.getUrl(), image.getPhotographer()))
-                        .toList()
-        );
+        var paintings = paintingRepository.list("""
+                SELECT p FROM Painting p
+                LEFT JOIN FETCH p.images
+                LEFT JOIN FETCH p.tags
+                WHERE p.church = ?1
+                """, church);
+        church.setPaintings(paintings);
+        return ChurchResponse.fromChurch(church);
     }
 
-    public List<ChurchResponse> getChurches() {
-        return churchRepository.find("isPublished = true")
-                .list()
+    public List<ChurchesResponse> getChurches() {
+        return churchRepository.list("""
+                        SELECT c FROM Church c
+                        LEFT JOIN FETCH c.images
+                        WHERE c.isPublished = true
+                        """)
                 .stream()
-                .map(church -> new ChurchResponse(
-                        church.getId(),
-                        church.getName(),
-                        church.getDescription(),
-                        church.getBibliographyReferences(),
-                        church.getAddress().street(),
-                        church.getAddress().city(),
-                        church.getAddress().state(),
-                        church.getImages().stream()
-                                .map(image -> new ChurchImageDto(image.getUrl(), image.getPhotographer()))
-                                .toList()
-                ))
+                .map(ChurchesResponse::fromChurch)
                 .toList();
     }
 
