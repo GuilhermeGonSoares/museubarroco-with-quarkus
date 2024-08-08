@@ -1,81 +1,81 @@
 
-    alter table church_images 
-       drop constraint FK7e1akn1h3j4oufc136lfy3dqh;
+    alter table if exists church_images 
+       drop constraint if exists FK7e1akn1h3j4oufc136lfy3dqh;
 
-    alter table church_images 
-       drop constraint FKe52dwumx1xwkfa2fds8wr4bgn;
+    alter table if exists church_images 
+       drop constraint if exists FKe52dwumx1xwkfa2fds8wr4bgn;
 
-    alter table churches 
-       drop constraint FKivksbjljx2mwpxecj7hh7du29;
+    alter table if exists churches 
+       drop constraint if exists FKivksbjljx2mwpxecj7hh7du29;
 
-    alter table engravings 
-       drop constraint FKegvuxiwhswpnv0rc642m84t82;
+    alter table if exists engravings 
+       drop constraint if exists FKegvuxiwhswpnv0rc642m84t82;
 
-    alter table painting_images 
-       drop constraint FK92thfunrbytapuxylfw0l2scj;
+    alter table if exists painting_images 
+       drop constraint if exists FK92thfunrbytapuxylfw0l2scj;
 
-    alter table painting_images 
-       drop constraint FKgga7sc0t6deuxefontd977i6l;
+    alter table if exists painting_images 
+       drop constraint if exists FKgga7sc0t6deuxefontd977i6l;
 
-    alter table painting_tags 
-       drop constraint FKbvbxte7n8xigdq6fmr7h4g2hi;
+    alter table if exists painting_tags 
+       drop constraint if exists FKbvbxte7n8xigdq6fmr7h4g2hi;
 
-    alter table painting_tags 
-       drop constraint FK6hidi2bemr8gpdao761adnpgq;
+    alter table if exists painting_tags 
+       drop constraint if exists FK6hidi2bemr8gpdao761adnpgq;
 
-    alter table paintings 
-       drop constraint FK8bqruf5qhsq22wtja3hkvtrq1;
+    alter table if exists paintings 
+       drop constraint if exists FK8bqruf5qhsq22wtja3hkvtrq1;
 
-    alter table paintings 
-       drop constraint FK3sbwj77ow6k6ufdesaynrwls1;
+    alter table if exists paintings 
+       drop constraint if exists FK3sbwj77ow6k6ufdesaynrwls1;
 
-    alter table suggestion_images 
-       drop constraint FK5kvownl21m4x4gxpt7t7vm4j7;
+    alter table if exists suggestion_images 
+       drop constraint if exists FK5kvownl21m4x4gxpt7t7vm4j7;
 
-    alter table suggestion_images 
-       drop constraint FK6sar44lry9fb01yk1ugutrq1h;
+    alter table if exists suggestion_images 
+       drop constraint if exists FK6sar44lry9fb01yk1ugutrq1h;
 
-    alter table suggestions 
-       drop constraint FK7yns86oadd04hrdcstg7mhirm;
+    alter table if exists suggestions 
+       drop constraint if exists FK7yns86oadd04hrdcstg7mhirm;
 
-    alter table suggestions 
-       drop constraint FKriyx467shlqlqlytjugugvitp;
+    alter table if exists suggestions 
+       drop constraint if exists FKriyx467shlqlqlytjugugvitp;
 
-    alter table tags 
-       drop constraint FKpsynysaxl7cyw8mr5c8xevneg;
+    alter table if exists tags 
+       drop constraint if exists FKpsynysaxl7cyw8mr5c8xevneg;
 
-    drop table church_images;
+    drop table if exists church_images cascade;
 
-    drop table churches;
+    drop table if exists churches cascade;
 
-    drop table engravings;
+    drop table if exists engravings cascade;
 
-    drop table images;
+    drop table if exists images cascade;
 
-    drop table painting_images;
+    drop table if exists painting_images cascade;
 
-    drop table painting_tags;
+    drop table if exists painting_tags cascade;
 
-    drop table paintings;
+    drop table if exists paintings cascade;
 
-    drop table suggestion_images;
+    drop table if exists suggestion_images cascade;
 
-    drop table suggestions;
+    drop table if exists suggestions cascade;
 
-    drop table tags;
+    drop table if exists tags cascade;
 
-    drop table users;
+    drop table if exists users cascade;
 
-    drop sequence churches_seq;
+    drop sequence if exists churches_seq;
 
-    drop sequence engravings_seq;
+    drop sequence if exists engravings_seq;
 
-    drop sequence images_seq;
+    drop sequence if exists images_seq;
 
-    drop sequence paintings_seq;
+    drop sequence if exists paintings_seq;
 
-    drop sequence suggestions_seq;
+    drop sequence if exists suggestions_seq;
 
-    drop sequence tags_seq;
+    drop sequence if exists tags_seq;
 
-    drop sequence users_seq;
+    drop sequence if exists users_seq;

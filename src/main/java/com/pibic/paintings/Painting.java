@@ -6,6 +6,7 @@ import com.pibic.tags.Tag;
 import com.pibic.users.User;
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -28,6 +29,8 @@ public class Painting {
     private String bibliographySource;
     private String bibliographyReference;
     private String placement;
+    private final LocalDateTime submittedAt = LocalDateTime.now();
+    private LocalDateTime updatedAt;
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinTable(name = "painting_images",
             joinColumns = @JoinColumn(name = "painting_id"),
@@ -96,6 +99,7 @@ public class Painting {
         for (var image : images){
             image.setType("painting");
         }
+        updatedAt = LocalDateTime.now();
     }
 
     public static Painting create(
@@ -268,6 +272,14 @@ public class Painting {
 
     public List<Suggestion> getSuggestions() {
         return suggestions;
+    }
+
+    public LocalDateTime getSubmittedAt() {
+        return submittedAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
     }
 
     public void setImages(List<Image> images) {

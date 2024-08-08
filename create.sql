@@ -64,6 +64,8 @@
         church_id bigint,
         id bigint not null,
         registered_by bigint,
+        submitted_at timestamp(6),
+        updated_at timestamp(6),
         artisan varchar(255),
         bibliography_reference varchar(255),
         bibliography_source varchar(255),

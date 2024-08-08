@@ -3,6 +3,7 @@ package com.pibic.paintings.dtos;
 
 import com.pibic.paintings.Painting;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public record PaintingsResponse(
@@ -14,6 +15,8 @@ public record PaintingsResponse(
         String placement,
         String registeredBy,
         boolean isPublished,
+        LocalDateTime submittedAt,
+        LocalDateTime updatedAt,
         List<ImageResponse> images,
         ChurchResponse church,
         List<TagResponse> tags
@@ -38,6 +41,8 @@ public record PaintingsResponse(
                 painting.getPlacement(),
                 painting.getRegisteredBy().getName(),
                 painting.isPublished(),
+                painting.getSubmittedAt(),
+                painting.getUpdatedAt(),
                 painting.getImages().stream()
                         .map(image -> new ImageResponse(image.getId(), image.getUrl(), image.getPhotographer()))
                         .toList(),
