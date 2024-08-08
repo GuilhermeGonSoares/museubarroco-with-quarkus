@@ -28,12 +28,12 @@ public class Painting {
     private String bibliographySource;
     private String bibliographyReference;
     private String placement;
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinTable(name = "painting_images",
             joinColumns = @JoinColumn(name = "painting_id"),
             inverseJoinColumns = @JoinColumn(name = "image_id"))
     private List<Image> images = new ArrayList<>();
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "painting_id", referencedColumnName = "id")
     private List<Engraving> engravings = new ArrayList<>();
     @ManyToOne
@@ -47,7 +47,7 @@ public class Painting {
             joinColumns = @JoinColumn(name = "painting_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
     private Set<Tag> tags = new HashSet<>();
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "painting_id", referencedColumnName = "id")
     private List<Suggestion> suggestions = new ArrayList<>();
 
@@ -268,5 +268,13 @@ public class Painting {
 
     public List<Suggestion> getSuggestions() {
         return suggestions;
+    }
+
+    public void setImages(List<Image> images) {
+        this.images = images;
+    }
+
+    public void setEngravings(List<Engraving> engravings) {
+        this.engravings = engravings;
     }
 }

@@ -5,7 +5,7 @@ import com.pibic.paintings.Painting;
 
 import java.util.List;
 
-public record PaintingResponse(
+public record PaintingsResponse(
         Long id,
         String title,
         String description,
@@ -14,16 +14,12 @@ public record PaintingResponse(
         String placement,
         String registeredBy,
         boolean isPublished,
-        String bibliographySource,
-        String bibliographyReference,
-        ChurchResponse church,
         List<ImageResponse> images,
-        List<EngravingResponse> engravings,
+        ChurchResponse church,
         List<TagResponse> tags
 ) {
     public record TagResponse(Long id, String name) {}
     public record ImageResponse(Long id, String url, String photographer) {}
-    public record EngravingResponse(Long id, String name, String url, String createdBy) {}
     public record ChurchResponse(
             Long id,
             String name,
@@ -32,8 +28,8 @@ public record PaintingResponse(
             String street
     ){}
 
-    public static PaintingResponse fromPainting(Painting painting){
-        return new PaintingResponse(
+    public static PaintingsResponse fromPainting(Painting painting){
+        return new PaintingsResponse(
                 painting.getId(),
                 painting.getTitle(),
                 painting.getDescription(),
@@ -42,8 +38,9 @@ public record PaintingResponse(
                 painting.getPlacement(),
                 painting.getRegisteredBy().getName(),
                 painting.isPublished(),
-                painting.getBibliographySource(),
-                painting.getBibliographyReference(),
+                painting.getImages().stream()
+                        .map(image -> new ImageResponse(image.getId(), image.getUrl(), image.getPhotographer()))
+                        .toList(),
                 new ChurchResponse(
                         painting.getChurch().getId(),
                         painting.getChurch().getName(),
@@ -51,12 +48,6 @@ public record PaintingResponse(
                         painting.getChurch().getAddress().state(),
                         painting.getChurch().getAddress().street()
                 ),
-                painting.getImages().stream()
-                        .map(image -> new ImageResponse(image.getId(), image.getUrl(), image.getPhotographer()))
-                        .toList(),
-                painting.getEngravings().stream()
-                        .map(engraving -> new EngravingResponse(engraving.getId(), engraving.getName(), engraving.getUrl(), engraving.getCreatedBy()))
-                        .toList(),
                 painting.getTags().stream()
                         .map(tag -> new TagResponse(tag.getId(), tag.getName()))
                         .toList()

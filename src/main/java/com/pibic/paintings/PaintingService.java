@@ -7,7 +7,6 @@ import com.pibic.shared.images.ImageHelper;
 import com.pibic.shared.abstraction.IStorageService;
 import com.pibic.tags.Tag;
 import com.pibic.tags.TagRepository;
-import com.pibic.tags.dtos.TagResponse;
 import com.pibic.users.UserRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -32,21 +31,30 @@ public class PaintingService {
     IStorageService storageService;
 
     public PaintingResponse getPaintingById(Long id) {
-        Painting painting = paintingRepository
-                .find("id = ?1 and isPublished = true", id)
-                .firstResult();
-        if (painting == null) {
-            throw new NotFoundException("Painting not found");
-        }
-        return mappingToResponse(painting);
+        var painting = paintingRepository
+                .find("""
+                        SELECT p FROM Painting p
+                        LEFT JOIN FETCH p.church c
+                        LEFT JOIN FETCH p.registeredBy u
+                        LEFT JOIN FETCH p.tags t
+                        WHERE p.id = ?1 AND p.isPublished = true
+                        """, id)
+                .firstResultOptional().orElseThrow(() -> new NotFoundException("Painting not found"));
+        return PaintingResponse.fromPainting(painting);
     }
 
-    public List<PaintingResponse> getAllPaintings() {
+    public List<PaintingsResponse> getAllPaintings() {
         return paintingRepository
-                .find("isPublished = true")
-                .list()
+                .list("""
+                        SELECT p FROM Painting p
+                        LEFT JOIN FETCH p.church c
+                        LEFT JOIN FETCH p.registeredBy u
+                        LEFT JOIN FETCH p.tags t
+                        LEFT JOIN FETCH p.images i
+                        WHERE p.isPublished = true
+                        """)
                 .stream()
-                .map(this::mappingToResponse)
+                .map(PaintingsResponse::fromPainting)
                 .toList();
     }
 
@@ -171,30 +179,8 @@ public class PaintingService {
         painting.addAnswerToSuggestion(suggestionId, message);
     }
 
-    private PaintingResponse mappingToResponse(Painting painting) {
-        return new PaintingResponse(
-                painting.getId(),
-                painting.getTitle(),
-                painting.getDescription(),
-                painting.getArtisan(),
-                painting.getDateOfCreation(),
-                painting.getBibliographySource(),
-                painting.getBibliographyReference(),
-                painting.getPlacement(),
-                painting.getRegisteredBy().getName(),
-                painting.getImages().stream().map(image -> new ImageDto(image.getUrl(), image.getPhotographer())).toList(),
-                painting.getEngravings().stream().map(engraving -> new EngravingDto(engraving.getName(), engraving.getUrl(), engraving.getCreatedBy())).toList(),
-                new ChurchDto(
-                        painting.getChurch().getId(),
-                        painting.getChurch().getName(),
-                        painting.getChurch().getAddress().city(),
-                        painting.getChurch().getAddress().state(),
-                        painting.getChurch().getAddress().street(),
-                        painting.getChurch().getImages().stream().map(image -> new ImageDto(image.getUrl(), image.getPhotographer())).toList()
-                ),
-                painting.getTags().stream().map(tag -> new TagResponse(tag.getId(), tag.getName())).toList()
-        );
-    }
+
+
     private List<Image> getImageWithUrls(String paintingName, List<ImageDto> images){
         return images
                 .stream()
