@@ -13,7 +13,7 @@ public class Tag {
     private Long id;
     private String name;
     private boolean isPublished;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 

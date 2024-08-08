@@ -1,6 +1,6 @@
 package com.pibic.tags;
 
-import com.pibic.tags.dtos.TagDto;
+import com.pibic.tags.dtos.TagResponse;
 import com.pibic.tags.dtos.CreateTagDto;
 import com.pibic.users.UserRepository;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -29,20 +29,22 @@ public class TagServices {
         return new CreateTagDto(tag.getId(), tag.getName());
     }
 
-    public List<TagDto> getAllTags() {
-        return tagRepository.findAll().stream()
-                .map(tag -> new TagDto(tag.getId(), tag.getName()))
+    public List<TagResponse> getAllTags() {
+        return tagRepository
+                .findAll()
+                .stream()
+                .map(TagResponse::fromTag)
                 .toList();
     }
 
-    public TagDto getTagByName(String name) {
+    public TagResponse getTagByName(String name) {
         var tag = tagRepository.findByName(name)
                 .orElseThrow(() -> new NotFoundException("Tag not found"));
-        return new TagDto(tag.getId(), tag.getName());
+        return new TagResponse(tag.getId(), tag.getName());
     }
 
     @Transactional
-    public TagDto updateTag(Long tagId, String newName, Long userId) {
+    public TagResponse updateTag(Long tagId, String newName, Long userId) {
         var user = userRepository.findById(userId);
         if (user == null) {
             throw new NotFoundException("User not found");
@@ -53,7 +55,7 @@ public class TagServices {
         }
         var isUniqueName = !tagRepository.findByName(newName).isPresent();
         tag.updateName(newName, isUniqueName, user);
-        return new TagDto(tag.getId(), tag.getName());
+        return new TagResponse(tag.getId(), tag.getName());
     }
 
     @Transactional
