@@ -43,16 +43,64 @@ public class PaintingService {
         return PaintingResponse.fromPainting(painting);
     }
 
-    public List<PaintingsResponse> getAllPaintings() {
+    public PaintingResponse getAuthorizedPaintingById(Long id, Long userId, String filter) {
+        var user = userRepository.find("id = ?1", userId)
+                .firstResultOptional()
+                .orElseThrow(() -> new NotFoundException("User not found"));
+        StringBuilder sql = new StringBuilder("""
+                SELECT p FROM Painting p
+                LEFT JOIN FETCH p.church c
+                LEFT JOIN FETCH p.registeredBy u
+                LEFT JOIN FETCH p.tags t
+                WHERE p.id = ?1
+                """);
+        switch (filter == null ? "" : filter) {
+            case "published" -> sql.append("AND p.isPublished = true ");
+            case "unpublished" -> sql.append("AND p.isPublished = false ");
+            default -> {}
+        }
+        if (!user.isAdmin())
+            sql.append("AND p.registeredBy.id = ").append(userId);
+        return PaintingResponse.fromPainting(
+                paintingRepository.find(sql.toString(), id)
+                        .firstResultOptional()
+                        .orElseThrow(() -> new NotFoundException("Painting not found"))
+        );
+    }
+
+    public List<PaintingsResponse> getPublishedPaintings() {
         return paintingRepository
                 .list("""
                         SELECT p FROM Painting p
                         LEFT JOIN FETCH p.church c
                         LEFT JOIN FETCH p.registeredBy u
                         LEFT JOIN FETCH p.tags t
-                        LEFT JOIN FETCH p.images i
                         WHERE p.isPublished = true
                         """)
+                .stream()
+                .map(PaintingsResponse::fromPainting)
+                .toList();
+    }
+    public List<PaintingsResponse> getAuthorizedPaintings(Long userId, String filter) {
+        var user = userRepository.find("id = ?1", userId)
+                .firstResultOptional()
+                .orElseThrow(() -> new NotFoundException("User not found"));
+        StringBuilder sql = new StringBuilder("""
+                SELECT p FROM Painting p
+                LEFT JOIN FETCH p.church c
+                LEFT JOIN FETCH p.registeredBy u
+                LEFT JOIN FETCH p.tags t
+                WHERE 1 = 1
+                """);
+        switch (filter == null ? "" : filter) {
+            case "published" -> sql.append("AND p.isPublished = true ");
+            case "unpublished" -> sql.append("AND p.isPublished = false ");
+            default -> {}
+        }
+        if (!user.isAdmin())
+            sql.append("AND p.registeredBy.id = ").append(userId);
+        return paintingRepository
+                .list(sql.toString())
                 .stream()
                 .map(PaintingsResponse::fromPainting)
                 .toList();

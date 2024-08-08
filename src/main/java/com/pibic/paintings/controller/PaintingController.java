@@ -1,10 +1,7 @@
 package com.pibic.paintings.controller;
 
 import com.pibic.paintings.PaintingService;
-import com.pibic.paintings.dtos.CreatePaintingDto;
-import com.pibic.paintings.dtos.EngravingDto;
-import com.pibic.paintings.dtos.ImageDto;
-import com.pibic.paintings.dtos.UpdatePaintingDto;
+import com.pibic.paintings.dtos.*;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -14,6 +11,8 @@ import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.jwt.JsonWebToken;
+
+import java.util.List;
 
 @Path("/api/paintings")
 @Produces(MediaType.APPLICATION_JSON)
@@ -28,7 +27,25 @@ public class PaintingController {
 
     @GET
     public Response getPaintings() {
-        return Response.ok(paintingService.getAllPaintings()).build();
+        return Response.ok(paintingService.getPublishedPaintings()).build();
+    }
+
+    @RolesAllowed({"admin", "user"})
+    @GET
+    @Path("/authorized")
+    public Response getAuthorizedPaintings(@QueryParam("filter") String filter) {
+        Long userId = Long.parseLong(jwt.getClaim("id").toString());
+        List<PaintingsResponse> responses =paintingService.getAuthorizedPaintings(userId, filter);
+        return Response.ok(responses).build();
+    }
+
+    @RolesAllowed({"admin", "user"})
+    @GET
+    @Path("/authorized/{id}")
+    public Response getAuthorizedPaintingById(@PathParam("id") Long id, @QueryParam("filter") String filter) {
+        Long userId = Long.parseLong(jwt.getClaim("id").toString());
+        PaintingResponse painting = paintingService.getAuthorizedPaintingById(id, userId, filter);
+        return Response.ok(painting).build();
     }
 
     @GET

@@ -126,7 +126,7 @@ class PaintingServiceTest {
         var tag = createTag(user);
         var painting = createPainting(user, church, tag);
         //act
-        var paintings = paintingService.getAllPaintings();
+        var paintings = paintingService.getPublishedPaintings();
         //assert
         assertNotNull(paintings);
         assertEquals(1, paintings.size());
