@@ -7,7 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import java.util.List;
 
 public record UpdatePaintingRequest(
-        @NotBlank(message = "Title is required")
+        @NotBlank(message = "Título é obrigatório")
         String title,
         String description,
         String dateOfCreation,
@@ -15,7 +15,7 @@ public record UpdatePaintingRequest(
         List<String> bibliographyReference,
         String placement,
         String artisan,
-        @NotNull(message = "Church ID is required")
+        @NotNull(message = "Igreja é obrigatória")
         Long churchId,
         List<String> urlImagesToRemove,
         List<@Valid ImagePaintingRequest> images,

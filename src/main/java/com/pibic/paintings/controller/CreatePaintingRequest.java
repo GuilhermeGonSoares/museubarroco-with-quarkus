@@ -8,7 +8,7 @@ import jakarta.validation.constraints.Size;
 import java.util.List;
 
 public record CreatePaintingRequest(
-        @NotBlank(message = "Title is required")
+        @NotBlank(message = "Título é obrigatório")
         String title,
         String description,
         String dateOfCreation,
@@ -16,9 +16,9 @@ public record CreatePaintingRequest(
         List<String> bibliographyReference,
         String placement,
         String artisan,
-        @NotNull(message = "Church ID is required")
+        @NotNull(message = "Igreja é obrigatória")
         Long churchId,
-        @Size(min = 1, message = "At least one image is required")
+        @Size(min = 1, message = "Deve haver pelo menos uma imagem")
         List<@Valid ImagePaintingRequest> images,
         List<@Valid EngravingRequest> engravingRequests,
         List<Long> tagIds

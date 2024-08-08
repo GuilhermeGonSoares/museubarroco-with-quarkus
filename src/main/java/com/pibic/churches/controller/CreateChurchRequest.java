@@ -7,16 +7,16 @@ import jakarta.validation.constraints.Size;
 import java.util.List;
 
 public record CreateChurchRequest(
-        @NotBlank(message = "Name is required")
+        @NotBlank(message = "Nome é obrigatório")
         String name,
         String description,
         String street,
-        @NotBlank(message = "City is required")
+        @NotBlank(message = "Cidade é obrigatória")
         String city,
-        @NotBlank(message = "State is required")
+        @NotBlank(message = "Estado é obrigatório")
         String state,
         List<String> bibliographyReference,
-        @Size(min = 1, message = "At least one image is required")
+        @Size(min = 1, message = "Deve ter pelo menos uma imagem")
         List<@Valid ImageChurchRequest> images
 ) {
 }

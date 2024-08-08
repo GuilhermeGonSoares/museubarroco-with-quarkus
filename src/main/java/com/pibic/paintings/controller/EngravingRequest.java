@@ -4,9 +4,9 @@ import com.pibic.shared.abstraction.ValidBase64Image;
 import jakarta.validation.constraints.NotBlank;
 
 public record EngravingRequest(
-        @NotBlank(message = "Name is required")
+        @NotBlank(message = "Nome é obrigatório")
         String name,
-        @NotBlank(message = "Base64Image is required")
+        @NotBlank(message = "Imagem é obrigatória")
         @ValidBase64Image
         String base64Image,
         String createdBy
