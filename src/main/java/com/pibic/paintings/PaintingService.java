@@ -38,6 +38,7 @@ public class PaintingService {
                         LEFT JOIN FETCH p.registeredBy u
                         LEFT JOIN FETCH p.tags t
                         WHERE p.id = ?1 AND p.isPublished = true
+                        and t.isPublished = true
                         """, id)
                 .firstResultOptional().orElseThrow(() -> new NotFoundException("Painting not found"));
         return PaintingResponse.fromPainting(painting);
@@ -55,7 +56,7 @@ public class PaintingService {
                 WHERE p.id = ?1
                 """);
         switch (filter == null ? "" : filter) {
-            case "published" -> sql.append("AND p.isPublished = true ");
+            case "published" -> sql.append("AND p.isPublished = true AND t.isPublished = true ");
             case "unpublished" -> sql.append("AND p.isPublished = false ");
             default -> {}
         }
@@ -75,9 +76,10 @@ public class PaintingService {
                         LEFT JOIN FETCH p.church c
                         LEFT JOIN FETCH p.registeredBy u
                         LEFT JOIN FETCH p.tags t
-                        WHERE p.isPublished = true
+                        WHERE p.isPublished = true and t.isPublished = true and c.isPublished = true
                         """)
                 .stream()
+                .filter(p -> p.getChurch() != null)
                 .map(PaintingsResponse::fromPainting)
                 .toList();
     }
@@ -93,7 +95,7 @@ public class PaintingService {
                 WHERE 1 = 1
                 """);
         switch (filter == null ? "" : filter) {
-            case "published" -> sql.append("AND p.isPublished = true ");
+            case "published" -> sql.append("AND p.isPublished = true AND t.isPublished = true ");
             case "unpublished" -> sql.append("AND p.isPublished = false ");
             default -> {}
         }
@@ -254,5 +256,9 @@ public class PaintingService {
                         )
                 ))
                 .toList();
+    }
+
+    public ArtisansResponse getArtisans() {
+        return new ArtisansResponse(paintingRepository.getArtisans());
     }
 }

@@ -54,6 +54,12 @@ public class PaintingController {
         return Response.ok(paintingService.getPaintingById(id)).build();
     }
 
+    @GET
+    @Path("/artisans")
+    public Response getArtisans(){
+        return Response.ok(paintingService.getArtisans()).build();
+    }
+
     @RolesAllowed({"admin", "user"})
     @POST
     public Response createPainting(@Valid CreatePaintingRequest createPaintingRequest){

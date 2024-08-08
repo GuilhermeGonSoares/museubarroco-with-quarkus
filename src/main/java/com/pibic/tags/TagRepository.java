@@ -7,7 +7,7 @@ import java.util.Optional;
 
 @ApplicationScoped
 public class TagRepository implements PanacheRepository<Tag> {
-    public Optional<Tag> findByName(String name) {
+    public Optional<Tag> findPublishedByName(String name) {
         return find("lower(name) = lower(?1) and isPublished = true", name).firstResultOptional();
     }
 }

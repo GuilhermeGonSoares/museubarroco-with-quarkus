@@ -54,20 +54,24 @@ public class ChurchService {
         }
         var paintings = paintingRepository.list("""
                 SELECT p FROM Painting p
-                LEFT JOIN FETCH p.images
-                LEFT JOIN FETCH p.tags
+                LEFT JOIN FETCH p.tags t
                 WHERE p.church = ?1
+                AND p.isPublished = true AND t.isPublished = true
                 """, church);
         church.setPaintings(paintings);
         return ChurchResponse.fromChurch(church);
     }
 
-    public List<ChurchesResponse> getChurches() {
-        return churchRepository.list("""
-                        SELECT c FROM Church c
-                        LEFT JOIN FETCH c.images
-                        WHERE c.isPublished = true
-                        """)
+    public List<ChurchesResponse> getChurches(String state) {
+        var sql = new StringBuilder("""
+                    SELECT c FROM Church c
+                    LEFT JOIN FETCH c.images
+                    WHERE c.isPublished = true
+                   """);
+        if (state != null) {
+            sql.append(" AND c.address.state = '").append(state).append("'");
+        }
+        return churchRepository.list(sql.toString())
                 .stream()
                 .map(ChurchesResponse::fromChurch)
                 .toList();

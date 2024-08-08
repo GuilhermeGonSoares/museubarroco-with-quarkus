@@ -23,7 +23,7 @@ public class TagServices {
         if (user == null) {
             throw new NotFoundException("User not found");
         }
-        var isUniqueName = !tagRepository.findByName(name).isPresent();
+        var isUniqueName = !tagRepository.findPublishedByName(name).isPresent();
         var tag = Tag.create(name, user, isUniqueName);
         tagRepository.persist(tag);
         return new CreateTagDto(tag.getId(), tag.getName());
@@ -31,14 +31,14 @@ public class TagServices {
 
     public List<TagResponse> getAllTags() {
         return tagRepository
-                .findAll()
+                .list("isPublished", true)
                 .stream()
                 .map(TagResponse::fromTag)
                 .toList();
     }
 
     public TagResponse getTagByName(String name) {
-        var tag = tagRepository.findByName(name)
+        var tag = tagRepository.findPublishedByName(name)
                 .orElseThrow(() -> new NotFoundException("Tag not found"));
         return new TagResponse(tag.getId(), tag.getName());
     }
@@ -53,7 +53,7 @@ public class TagServices {
         if (tag == null) {
             throw new NotFoundException("Tag not found");
         }
-        var isUniqueName = !tagRepository.findByName(newName).isPresent();
+        var isUniqueName = !tagRepository.findPublishedByName(newName).isPresent();
         tag.updateName(newName, isUniqueName, user);
         return new TagResponse(tag.getId(), tag.getName());
     }

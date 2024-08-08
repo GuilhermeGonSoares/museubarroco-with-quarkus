@@ -106,7 +106,7 @@ class ChurchServiceTest {
         );
         var id = churchService.createChurch(createChurchDto);
         var id2 = churchService.createChurch(createChurchDto);
-        var churches = churchService.getChurches();
+        var churches = churchService.getChurches(null);
         assertEquals(2, churches.size());
         assertEquals(createChurchDto.name(), churches.get(0).name());
     }

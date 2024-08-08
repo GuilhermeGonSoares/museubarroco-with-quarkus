@@ -27,6 +27,13 @@ public class TagController {
         return Response.ok(tags).build();
     }
 
+    @GET
+    @Path("/{name}")
+    public Response getTagByName(@PathParam("name") String name) {
+        var tag = tagServices.getTagByName(name);
+        return Response.ok(tag).build();
+    }
+
     @RolesAllowed({"admin", "user"})
     @POST
     public Response createTag(@Valid CreateTagRequest createTagRequest) {

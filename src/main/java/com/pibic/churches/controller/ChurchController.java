@@ -26,8 +26,8 @@ public class ChurchController {
     JsonWebToken jwt;
 
     @GET
-    public Response getChurches() {
-        var churches = churchService.getChurches();
+    public Response getChurches(@QueryParam("state") String state) {
+        var churches = churchService.getChurches(state);
         return Response.ok(churches).build();
     }
 
