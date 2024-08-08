@@ -1,6 +1,6 @@
 package com.pibic.paintings.dtos;
 
-import com.pibic.tags.dtos.TagDto;
+import com.pibic.tags.dtos.TagResponse;
 
 import java.util.List;
 
@@ -17,7 +17,7 @@ public record PaintingResponse(
         List<ImageDto> images,
         List<EngravingDto> engravings,
         ChurchDto church,
-        List<TagDto> tags
+        List<TagResponse> tags
 ) {
 }
 

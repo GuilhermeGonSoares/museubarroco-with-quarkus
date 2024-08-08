@@ -7,7 +7,7 @@ import com.pibic.shared.images.ImageHelper;
 import com.pibic.shared.abstraction.IStorageService;
 import com.pibic.tags.Tag;
 import com.pibic.tags.TagRepository;
-import com.pibic.tags.dtos.TagDto;
+import com.pibic.tags.dtos.TagResponse;
 import com.pibic.users.UserRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
@@ -192,7 +192,7 @@ public class PaintingService {
                         painting.getChurch().getAddress().street(),
                         painting.getChurch().getImages().stream().map(image -> new ImageDto(image.getUrl(), image.getPhotographer())).toList()
                 ),
-                painting.getTags().stream().map(tag -> new TagDto(tag.getId(), tag.getName())).toList()
+                painting.getTags().stream().map(tag -> new TagResponse(tag.getId(), tag.getName())).toList()
         );
     }
     private List<Image> getImageWithUrls(String paintingName, List<ImageDto> images){
