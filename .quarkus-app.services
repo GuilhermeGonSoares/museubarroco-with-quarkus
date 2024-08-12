@@ -6,10 +6,11 @@ Wants=postgresql.service
 [Service]
 User=guilherme_vm_admin
 EnvironmentFile=/home/guilherme_vm_admin/quarkus-app/.env
-ExecStart=/usr/bin/java -jar /home/guilherme_vm_admin/quarkus-app/quarkus-run.jar
+ExecStart=/usr/bin/sudo -E /usr/bin/java -jar /home/guilherme_vm_admin/quarkus-app/quarkus-run.jar -Dquarkus.http.port=${HTTP_PORT}
 SuccessExitStatus=143
 TimeoutStopSec=10
 Restart=on-failure
 
 [Install]
 WantedBy=multi-user.target
+

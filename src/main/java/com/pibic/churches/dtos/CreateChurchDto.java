@@ -6,6 +6,7 @@ public record CreateChurchDto(
         String name,
         String description,
         String bibliographyReferences,
+        String bibliographySource,
         String street,
         String city,
         String state,

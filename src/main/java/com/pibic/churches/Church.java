@@ -18,10 +18,12 @@ public class Church {
     private String name;
     @Embedded
     private Address address;
-    @Column(nullable = true)
+    @Column(columnDefinition = "TEXT")
     private String description;
-    @Column(nullable = true)
+    @Column(columnDefinition = "TEXT")
     private String bibliographyReferences;
+    @Column(columnDefinition = "TEXT")
+    private String bibliographySource;
     @Column(nullable = false)
     private boolean isPublished;
     @ManyToOne(fetch = FetchType.LAZY)
@@ -42,6 +44,7 @@ public class Church {
                     Address address,
                     String description,
                     String bibliographyReferences,
+                    String bibliographySource,
                     boolean isPublished,
                     User registeredBy,
                     List<Image> images) {
@@ -49,6 +52,7 @@ public class Church {
         this.address = address;
         this.description = description;
         this.bibliographyReferences = bibliographyReferences;
+        this.bibliographySource = bibliographySource;
         this.isPublished = isPublished;
         this.registeredBy = registeredBy;
         this.images.addAll(images);
@@ -58,14 +62,15 @@ public class Church {
                                  Address address,
                                  String description,
                                  String bibliographyReferences,
+                                 String bibliographySource,
                                  User registeredBy,
                                  List<Image> images
     ) {
         var isPublished = registeredBy.isAdmin();
-        if (images.size() == 0) {
+        if (images.isEmpty()) {
             throw new IllegalArgumentException("Church must have at least one image");
         }
-        return new Church(name, address, description, bibliographyReferences, isPublished, registeredBy, images);
+        return new Church(name, address, description, bibliographyReferences, bibliographySource, isPublished, registeredBy, images);
     }
 
     public void update(
@@ -73,6 +78,7 @@ public class Church {
             Address address,
             String description,
             String bibliographyReferences,
+            String bibliographySource,
             List<String> imageUrlsToRemove,
             List<Image> imagesToBeAdded,
             User user
@@ -93,6 +99,7 @@ public class Church {
         this.address = address;
         this.description = description;
         this.bibliographyReferences = bibliographyReferences;
+        this.bibliographySource = bibliographySource;
         this.images.addAll(imagesToBeAdded);
     }
 
@@ -128,6 +135,10 @@ public class Church {
 
     public String getBibliographyReferences() {
         return bibliographyReferences;
+    }
+
+    public String getBibliographySource() {
+        return bibliographySource;
     }
 
     public boolean isPublished() {

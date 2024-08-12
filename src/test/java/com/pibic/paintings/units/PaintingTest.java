@@ -467,6 +467,7 @@ class PaintingTest {
                 new Address("Praça Frei Orlando, 90", "Brasilia",  "DF"),
                 "Igreja de São Francisco de Assis, conhecida como Igreja de São Francisco, é uma igreja católica localizada na cidade de São João del-Rei, no estado de Minas Gerais, no Brasil.",
                 "São João del-Rei",
+                "Fontes 2",
                 user,
                 List.of(new Image("https://www.google.com.br", "Yan Tavares"))
         );

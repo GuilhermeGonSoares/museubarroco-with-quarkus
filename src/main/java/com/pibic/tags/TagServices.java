@@ -31,7 +31,17 @@ public class TagServices {
 
     public List<TagResponse> getAllTags() {
         return tagRepository
-                .list("isPublished", true)
+                .list("""
+                        SELECT t
+                        FROM Tag t
+                        WHERE t.isPublished = true
+                        AND EXISTS (
+                            SELECT p
+                            FROM Painting p
+                            JOIN p.tags pt
+                            WHERE pt.id = t.id
+                        )
+                        """)
                 .stream()
                 .map(TagResponse::fromTag)
                 .toList();

@@ -50,10 +50,11 @@ class ChurchServiceTest {
         );
         var createChurchDto = new CreateChurchDto(
                 "Igreja Batista",
-                "Rua 1",
-                "Cidade 1",
                 "Descrição",
                 "Referências",
+                "fontes",
+                "Rua 1",
+                "Cidade 1",
                 "DF",
                 user.getId(),
                 imagesDto
@@ -74,10 +75,11 @@ class ChurchServiceTest {
         var imagesDto = new ArrayList<ChurchImageDto>();
         var createChurchDto = new CreateChurchDto(
                 "Igreja Batista",
-                "Rua 1",
-                "Cidade 1",
                 "Descrição",
                 "Referências",
+                "fontes",
+                "Rua 1",
+                "Cidade 1",
                 "DF",
                 user.getId(),
                 imagesDto
@@ -96,10 +98,11 @@ class ChurchServiceTest {
         );
         var createChurchDto = new CreateChurchDto(
                 "Igreja Batista",
-                "Rua 1",
-                "Cidade 1",
                 "Descrição",
                 "Referências",
+                "fontes",
+                "Rua 1",
+                "Cidade 1",
                 "DF",
                 user.getId(),
                 imagesDto
@@ -121,10 +124,11 @@ class ChurchServiceTest {
         ));
         var createChurchDto = new CreateChurchDto(
                 "Igreja Batista",
-                "Rua 1",
-                "Cidade 1",
                 "Descrição",
                 "Referências",
+                "fontes",
+                "Rua 1",
+                "Cidade 1",
                 "DF",
                 user.getId(),
                 imagesDto
@@ -140,6 +144,7 @@ class ChurchServiceTest {
                 "Igreja Batista 2",
                 "Descrição 2",
                 "Referências 2",
+                "fontes 2",
                 "Rua 2",
                 "Cidade 2",
                 "GO",
@@ -164,10 +169,11 @@ class ChurchServiceTest {
         );
         var createChurchDto = new CreateChurchDto(
                 "Igreja Batista",
-                "Rua 1",
-                "Cidade 1",
                 "Descrição",
                 "Referências",
+                "fontes",
+                "Rua 1",
+                "Cidade 1",
                 "DF",
                 user.getId(),
                 imagesDto
@@ -181,6 +187,7 @@ class ChurchServiceTest {
                 "Igreja Batista 2",
                 "Descrição 2",
                 "Referências 2",
+                "Fontes 2",
                 "Rua 2",
                 "Cidade 2",
                 "GO",
@@ -202,10 +209,11 @@ class ChurchServiceTest {
         );
         var createChurchDto = new CreateChurchDto(
                 "Igreja Batista",
-                "Rua 1",
-                "Cidade 1",
                 "Descrição",
                 "Referências",
+                "fontes",
+                "Rua 1",
+                "Cidade 1",
                 "DF",
                 user.getId(),
                 imagesDto
@@ -220,6 +228,7 @@ class ChurchServiceTest {
                 "Igreja Batista 2",
                 "Descrição 2",
                 "Referências 2",
+                "Fontes 2",
                 "Rua 2",
                 "Cidade 2",
                 "GO",
@@ -236,6 +245,7 @@ class ChurchServiceTest {
                 "Igreja Batista 2",
                 "Descrição 2",
                 "Referências 2",
+                "Fontes 2",
                 "Rua 2",
                 "Cidade 2",
                 "GO",
@@ -256,10 +266,11 @@ class ChurchServiceTest {
         );
         var createChurchDto = new CreateChurchDto(
                 "Igreja Batista",
-                "Rua 1",
-                "Cidade 1",
                 "Descrição",
                 "Referências",
+                "fontes",
+                "Rua 1",
+                "Cidade 1",
                 "DF",
                 user.getId(),
                 imagesDto
@@ -284,10 +295,11 @@ class ChurchServiceTest {
         );
         var createChurchDto = new CreateChurchDto(
                 "Igreja Batista",
-                "Rua 1",
-                "Cidade 1",
                 "Descrição",
                 "Referências",
+                "fontes",
+                "Rua 1",
+                "Cidade 1",
                 "DF",
                 user.getId(),
                 imagesDto

@@ -8,6 +8,17 @@ import java.util.Optional;
 @ApplicationScoped
 public class TagRepository implements PanacheRepository<Tag> {
     public Optional<Tag> findPublishedByName(String name) {
-        return find("lower(name) = lower(?1) and isPublished = true", name).firstResultOptional();
+        return find("""
+                SELECT t
+                FROM Tag t
+                WHERE lower(t.name) = lower(?1)
+                AND t.isPublished = true
+                AND EXISTS (
+                            SELECT p
+                            FROM Painting p
+                            JOIN p.tags pt
+                            WHERE pt.id = t.id
+                        )
+                """, name).firstResultOptional();
     }
 }

@@ -21,12 +21,15 @@ public class Painting {
     private Long id;
     @Column(nullable = false)
     private String title;
+    @Column(columnDefinition = "TEXT")
     private String description;
     @Column(nullable = false)
     private boolean isPublished;
     private String artisan;
     private String dateOfCreation;
+    @Column(columnDefinition = "TEXT")
     private String bibliographySource;
+    @Column(columnDefinition = "TEXT")
     private String bibliographyReference;
     private String placement;
     private final LocalDateTime submittedAt = LocalDateTime.now();
@@ -39,7 +42,7 @@ public class Painting {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "painting_id", referencedColumnName = "id")
     private List<Engraving> engravings = new ArrayList<>();
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "church_id")
     private Church church;
     @ManyToOne(fetch = FetchType.LAZY)

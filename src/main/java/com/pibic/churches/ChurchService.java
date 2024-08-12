@@ -36,6 +36,7 @@ public class ChurchService {
                     new Address(createChurchDto.street(), createChurchDto.city(), createChurchDto.state()),
                     createChurchDto.description(),
                     createChurchDto.bibliographyReferences(),
+                    createChurchDto.bibliographySource(),
                     user,
                     getImageUrls(createChurchDto.name(), createChurchDto.images())
         );
@@ -92,6 +93,7 @@ public class ChurchService {
                 new Address(updateChurchDto.street(), updateChurchDto.city(), updateChurchDto.state()),
                 updateChurchDto.description(),
                 updateChurchDto.bibliographyReferences(),
+                updateChurchDto.bibliographySource(),
                 updateChurchDto.imageUrlsToBeRemoved(),
                 getImageUrls(updateChurchDto.name(), updateChurchDto.images()),
                 user

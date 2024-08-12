@@ -12,7 +12,9 @@ public record CreatePaintingRequest(
         String title,
         String description,
         String dateOfCreation,
-        String bibliographySource,
+        @NotNull(message = "Fonte da bibliografia deve ser uma lista")
+        List<String> bibliographySource,
+        @NotNull(message = "Referências bibliográficas deve ser uma lista")
         List<String> bibliographyReference,
         String placement,
         String artisan,
@@ -20,7 +22,9 @@ public record CreatePaintingRequest(
         Long churchId,
         @Size(min = 1, message = "Deve haver pelo menos uma imagem")
         List<@Valid ImagePaintingRequest> images,
+        @NotNull(message = "Deve ser uma lista de gravuras")
         List<@Valid EngravingRequest> engravingRequests,
+        @NotNull(message = "Deve ser uma lista de tags")
         List<Long> tagIds
 ) {
 }
