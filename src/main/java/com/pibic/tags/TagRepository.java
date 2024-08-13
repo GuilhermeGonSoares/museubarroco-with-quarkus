@@ -13,12 +13,6 @@ public class TagRepository implements PanacheRepository<Tag> {
                 FROM Tag t
                 WHERE lower(t.name) = lower(?1)
                 AND t.isPublished = true
-                AND EXISTS (
-                            SELECT p
-                            FROM Painting p
-                            JOIN p.tags pt
-                            WHERE pt.id = t.id
-                        )
                 """, name).firstResultOptional();
     }
 }
