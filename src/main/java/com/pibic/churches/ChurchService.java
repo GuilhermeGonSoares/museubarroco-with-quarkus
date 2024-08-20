@@ -63,6 +63,26 @@ public class ChurchService {
         return ChurchResponse.fromChurch(church);
     }
 
+    public AuthorizedChurchResponse getAuthorizedChurch(Long id, Long userId) {
+        var user = userRepository.findById(userId);
+        if (user == null) {
+            throw new NotFoundException("User not found");
+        }
+        var sql = new StringBuilder("""
+                SELECT c FROM Church c
+                LEFT JOIN FETCH c.images i
+                WHERE c.id = ?1
+                """);
+        if (!user.isAdmin()) {
+            sql.append(" AND c.registeredBy = ").append(userId);
+        }
+        var church = churchRepository.find(sql.toString(), id).firstResult();
+        if (church == null) {
+            throw new NotFoundException("Church not found");
+        }
+        return AuthorizedChurchResponse.fromChurch(church);
+    }
+
     public List<ChurchesResponse> getChurches(String state) {
         var sql = new StringBuilder("""
                     SELECT c FROM Church c
@@ -75,6 +95,25 @@ public class ChurchService {
         return churchRepository.list(sql.toString())
                 .stream()
                 .map(ChurchesResponse::fromChurch)
+                .toList();
+    }
+
+    public List<AuthorizedChurchResponse> getAuthorizedChurches(Long userId) {
+        var user = userRepository.findById(userId);
+        if (user == null) {
+            throw new NotFoundException("User not found");
+        }
+        var sql = new StringBuilder("""
+                SELECT c FROM Church c
+                LEFT JOIN FETCH c.images i
+                WHERE 1 = 1
+                """);
+        if (!user.isAdmin()) {
+            sql.append(" AND c.registeredBy = ").append(userId);
+        }
+        return churchRepository.list(sql.toString())
+                .stream()
+                .map(AuthorizedChurchResponse::fromChurch)
                 .toList();
     }
 

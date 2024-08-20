@@ -147,6 +147,7 @@ public class PaintingService {
         if (church == null)
             throw new NotFoundException("Church not found");
         var tags = tagRepository.find("id in ?1", updatePaintingDto.tags()).list();
+        var tagsToRemove = painting.getTags().stream().filter(t -> !tags.contains(t)).toList();
         painting.update(
                 updatePaintingDto.title(),
                 updatePaintingDto.description(),
@@ -163,10 +164,21 @@ public class PaintingService {
                 church,
                 user
         );
+        paintingRepository.delete("""
+                DELETE FROM Tag t
+                WHERE t IN ?1
+                AND (
+                    SELECT COUNT(p)
+                    FROM Painting p
+                    JOIN p.tags pt
+                    WHERE pt.id = t.id
+                ) = 0
+                """, tagsToRemove);
         if (!updatePaintingDto.imagesUrlsToRemove().isEmpty())
             updatePaintingDto.imagesUrlsToRemove().forEach(imageUrl -> storageService.deleteFile(BLOB_CONTAINER_PAINTING, imageUrl));
         if (!updatePaintingDto.engravingsUrlsToRemove().isEmpty())
             updatePaintingDto.engravingsUrlsToRemove().forEach(engravingUrl -> storageService.deleteFile(BLOB_CONTAINER_ENGRAVING, engravingUrl));
+
     }
 
     @Transactional

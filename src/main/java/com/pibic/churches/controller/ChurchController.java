@@ -31,10 +31,28 @@ public class ChurchController {
         return Response.ok(churches).build();
     }
 
+    @RolesAllowed({"admin", "user"})
+    @GET
+    @Path("/authorized")
+    public Response getAuthorizedChurches() {
+        Long userId = Long.parseLong(jwt.getClaim("id").toString());
+        var churches = churchService.getAuthorizedChurches(userId);
+        return Response.ok(churches).build();
+    }
+
     @GET
     @Path("/{id}")
     public Response getChurch(@PathParam("id") Long id) {
         var church = churchService.getChurch(id);
+        return Response.ok(church).build();
+    }
+
+    @RolesAllowed({"admin", "user"})
+    @GET
+    @Path("/authorized/{id}")
+    public Response getAuthorizedChurch(@PathParam("id") Long id) {
+        Long userId = Long.parseLong(jwt.getClaim("id").toString());
+        var church = churchService.getAuthorizedChurch(id, userId);
         return Response.ok(church).build();
     }
 
