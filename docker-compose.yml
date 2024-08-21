@@ -1,9 +1,0 @@
-services:
-  museubarroco:
-    image: guiilhermego/museubarroco:v1.0
-    ports:
-      - "80:80"
-    env_file:
-        - .env
-    volumes:
-        - .:/app

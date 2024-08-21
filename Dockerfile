@@ -19,6 +19,10 @@ WORKDIR /usr/app
 # Copiar tudo da pasta quarkus-app
 COPY --from=build /build/target/quarkus-app/ ./
 
+# Copiar os arquivos de chave para o diretório de trabalho
+COPY --from=build /build/src/main/resources/privateKey.pem /usr/app/privateKey.pem
+COPY --from=build /build/src/main/resources/publicKey.pem /usr/app/publicKey.pem
+
 # Expõe a porta 80
 EXPOSE 80
 
