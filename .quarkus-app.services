@@ -1,16 +1,19 @@
 [Unit]
-Description=Quarkus Application
-After=network.target postgresql.service
-Wants=postgresql.service
+Description=Docker Compose Application Service
+After=network.target postgresql.service docker.service
+Wants=postgresql.service docker.service
 
 [Service]
-User=guilherme_vm_admin
-EnvironmentFile=/home/guilherme_vm_admin/quarkus-app/.env
-ExecStart=/usr/bin/sudo -E /usr/bin/java -jar /home/guilherme_vm_admin/quarkus-app/quarkus-run.jar -Dquarkus.http.port=${HTTP_PORT}
-SuccessExitStatus=143
-TimeoutStopSec=10
-Restart=on-failure
+Type=oneshot
+RemainAfterExit=yes
+WorkingDirectory=/home/guilherme_vm_admin
+ExecStart=/usr/bin/sudo docker-compose up -d
+ExecStop=/usr/bin/sudo docker-compose down
+TimeoutStartSec=0
 
 [Install]
 WantedBy=multi-user.target
 
+
+QUARKUS SERVICE COMMAND:
+#cat /etc/systemd/system/quarkus-app.service
