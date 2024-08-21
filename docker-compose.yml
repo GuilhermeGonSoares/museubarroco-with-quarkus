@@ -5,5 +5,10 @@ services:
       - "80:80"
     env_file:
       - .env
-    volumes:
-      - .:/app
+    entrypoint: >
+      sh -c "
+      openssl genrsa -out /usr/app/rsaPrivateKey.pem 2048 &&
+      openssl rsa -pubout -in /usr/app/rsaPrivateKey.pem -out /usr/app/publicKey.pem &&
+      openssl pkcs8 -topk8 -nocrypt -inform pem -in /usr/app/rsaPrivateKey.pem -outform pem -out /usr/app/privateKey.pem &&
+      java -jar quarkus-run.jar
+      "
