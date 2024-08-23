@@ -108,6 +108,23 @@ public class PaintingService {
                 .toList();
     }
 
+    public List<PaintingsByTagResponse> getPaintingsByTag(String name) {
+        return paintingRepository
+                .find("""
+                            SELECT p
+                            FROM Painting p
+                            JOIN FETCH p.tags t
+                            JOIN FETCH p.images i
+                            JOIN FETCH p.registeredBy u
+                            WHERE lower(t.name) = lower(?1)
+                            AND p.isPublished = true
+                        """, name)
+                .list()
+                .stream()
+                .map(PaintingsByTagResponse::fromPainting)
+                .toList();
+    }
+
     @Transactional
     public Long createPainting(CreatePaintingDto createPaintingDto){
         var user = userRepository.findById(createPaintingDto.registeredById());

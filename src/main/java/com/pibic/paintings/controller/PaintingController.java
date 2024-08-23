@@ -60,6 +60,12 @@ public class PaintingController {
         return Response.ok(paintingService.getArtisans()).build();
     }
 
+    @GET
+    @Path("/tags/{tagName}")
+    public Response getPaintingsByTag(@PathParam("tagName") String tagName){
+        return Response.ok(paintingService.getPaintingsByTag(tagName)).build();
+    }
+
     @RolesAllowed({"admin", "user"})
     @POST
     public Response createPainting(@Valid CreatePaintingRequest createPaintingRequest){
