@@ -74,7 +74,7 @@ public class ChurchService {
                 WHERE c.id = ?1
                 """);
         if (!user.isAdmin()) {
-            sql.append(" AND c.registeredBy = ").append(userId);
+            sql.append("AND c.registeredBy.id = ").append(userId);
         }
         var church = churchRepository.find(sql.toString(), id).firstResult();
         if (church == null) {
@@ -109,7 +109,7 @@ public class ChurchService {
                 WHERE 1 = 1
                 """);
         if (!user.isAdmin()) {
-            sql.append(" AND c.registeredBy = ").append(userId);
+            sql.append("AND c.registeredBy.id = ").append(userId);
         }
         return churchRepository.list(sql.toString())
                 .stream()
