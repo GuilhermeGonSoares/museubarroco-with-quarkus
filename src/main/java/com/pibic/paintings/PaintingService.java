@@ -214,7 +214,18 @@ public class PaintingService {
         if (!user.isAdmin() && !painting.getRegisteredBy().getId().equals(userId)) {
             throw new IllegalStateException("Only the user who registered the painting can delete it");
         }
+        var tagsToRemove = painting.getTags().stream().toList();
         paintingRepository.delete(painting);
+        paintingRepository.delete("""
+                DELETE FROM Tag t
+                WHERE t IN ?1
+                AND (
+                    SELECT COUNT(p)
+                    FROM Painting p
+                    JOIN p.tags pt
+                    WHERE pt.id = t.id
+                ) = 0
+                """, tagsToRemove);
         painting.getImages().forEach(image -> storageService.deleteFile(BLOB_CONTAINER_PAINTING, image.getUrl()));
         painting.getEngravings().forEach(engraving -> storageService.deleteFile(BLOB_CONTAINER_ENGRAVING, engraving.getUrl()));
     }
