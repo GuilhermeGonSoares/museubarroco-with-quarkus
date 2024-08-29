@@ -95,9 +95,14 @@
     create table tags (
         is_published boolean not null,
         id bigint not null,
-        user_id bigint,
         name varchar(255),
         primary key (id)
+    );
+
+    create table tags_users (
+        tag_id bigint not null,
+        user_id bigint not null,
+        primary key (tag_id, user_id)
     );
 
     create table users (
@@ -179,7 +184,12 @@
        foreign key (painting_id) 
        references paintings;
 
-    alter table if exists tags 
-       add constraint FKpsynysaxl7cyw8mr5c8xevneg 
+    alter table if exists tags_users 
+       add constraint FK9k49ayv342gipvq1kkaiemn8v 
        foreign key (user_id) 
        references users;
+
+    alter table if exists tags_users 
+       add constraint FKtatu4vslteicxphiivhab026i 
+       foreign key (tag_id) 
+       references tags;

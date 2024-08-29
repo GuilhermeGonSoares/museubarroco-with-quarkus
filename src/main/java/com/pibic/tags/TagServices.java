@@ -23,25 +23,28 @@ public class TagServices {
         if (user == null) {
             throw new NotFoundException("User not found");
         }
-        var isUniqueName = !tagRepository.findPublishedByName(name).isPresent();
-        var tag = Tag.create(name, user, isUniqueName);
-        tagRepository.persist(tag);
-        return new CreateTagDto(tag.getId(), tag.getName());
+        var existingTag = tagRepository
+                .find("lower(name)", name.toLowerCase())
+                .firstResultOptional().orElse(null);
+        if (existingTag == null){
+            var tag = Tag.create(name, user);
+            tagRepository.persist(tag);
+            return new CreateTagDto(tag.getId(), tag.getName());
+        }
+        if (user.isAdmin() && !existingTag.isPublished()) {
+            existingTag.publish();
+            return new CreateTagDto(existingTag.getId(), existingTag.getName());
+        }
+        if (user.isAdmin() && existingTag.isPublished()) {
+            throw new IllegalArgumentException("Tag already published");
+        }
+        existingTag.addTagToUser(user);
+        return new CreateTagDto(existingTag.getId(), existingTag.getName());
     }
 
-    public List<TagResponse> getAllTags() {
+    public List<TagResponse> getAllPublishedTags() {
         return tagRepository
-                .list("""
-                        SELECT t
-                        FROM Tag t
-                        WHERE t.isPublished = true
-                        AND EXISTS (
-                            SELECT p
-                            FROM Painting p
-                            JOIN p.tags pt
-                            WHERE pt.id = t.id
-                        )
-                        """)
+                .list("isPublished = ?1", true)
                 .stream()
                 .map(TagResponse::fromTag)
                 .toList();
@@ -53,20 +56,21 @@ public class TagServices {
         return new TagResponse(tag.getId(), tag.getName());
     }
 
-    @Transactional
-    public TagResponse updateTag(Long tagId, String newName, Long userId) {
+    public List<TagResponse> getAvailableTags(Long userId) {
         var user = userRepository.findById(userId);
         if (user == null) {
             throw new NotFoundException("User not found");
         }
-        var tag = tagRepository.findById(tagId);
-        if (tag == null) {
-            throw new NotFoundException("Tag not found");
+        if (user.isAdmin()) {
+            return getAllPublishedTags();
         }
-        var isUniqueName = !tagRepository.findPublishedByName(newName).isPresent();
-        tag.updateName(newName, isUniqueName, user);
-        return new TagResponse(tag.getId(), tag.getName());
+        return tagRepository
+                .find("isPublished = true or ?1 member of users", user)
+                .stream()
+                .map(TagResponse::fromTag)
+                .toList();
     }
+
 
     @Transactional
     public void deleteTag(Long tagId, Long userId) {
@@ -81,9 +85,23 @@ public class TagServices {
         if(tag.isPublished() && !user.isAdmin()) {
             throw new IllegalArgumentException("Only admin can delete published tag");
         }
-        if (!user.isAdmin() && !(user.getId() == tag.getUser().getId())) {
+        if (!user.isAdmin() && !(tag.getUsers().contains(user))) {
             throw new IllegalArgumentException("Only admin or tag owner can delete tag");
         }
-        tagRepository.delete(tag);
+
+        tag.removeTagFromUser(user);
+        tag.unpublish();
+
+        if (tag.getUsers().isEmpty()) {
+            var isTagRelatedToPainting = tagRepository.count("""
+            SELECT COUNT(pt)
+            FROM Painting pt
+            JOIN pt.tags t
+            WHERE t.id = ?1
+            """, tagId) > 0;
+            if (!isTagRelatedToPainting) {
+                tagRepository.delete(tag);
+            }
+        }
     }
 }

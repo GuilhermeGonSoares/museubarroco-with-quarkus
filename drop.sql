@@ -41,8 +41,11 @@
     alter table if exists suggestions 
        drop constraint if exists FKriyx467shlqlqlytjugugvitp;
 
-    alter table if exists tags 
-       drop constraint if exists FKpsynysaxl7cyw8mr5c8xevneg;
+    alter table if exists tags_users 
+       drop constraint if exists FK9k49ayv342gipvq1kkaiemn8v;
+
+    alter table if exists tags_users 
+       drop constraint if exists FKtatu4vslteicxphiivhab026i;
 
     drop table if exists church_images cascade;
 
@@ -63,6 +66,8 @@
     drop table if exists suggestions cascade;
 
     drop table if exists tags cascade;
+
+    drop table if exists tags_users cascade;
 
     drop table if exists users cascade;
 

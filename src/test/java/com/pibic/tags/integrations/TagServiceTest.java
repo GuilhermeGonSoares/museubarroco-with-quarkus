@@ -65,7 +65,7 @@ public class TagServiceTest {
         var user = createUser(true);
         tagServices.createTag("Java", user.getId());
         tagServices.createTag("Spring", user.getId());
-        var allTags = tagServices.getAllTags();
+        var allTags = tagServices.getAllPublishedTags();
         assertEquals(0, allTags.size());
     }
 

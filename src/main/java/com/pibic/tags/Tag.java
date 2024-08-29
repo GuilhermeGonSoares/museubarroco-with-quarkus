@@ -3,7 +3,9 @@ package com.pibic.tags;
 import com.pibic.users.User;
 import jakarta.persistence.*;
 
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "tags")
@@ -13,9 +15,13 @@ public class Tag {
     private Long id;
     private String name;
     private boolean isPublished;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @ManyToMany
+    @JoinTable(
+            name = "tags_users",
+            joinColumns = @JoinColumn(name = "tag_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private Set<User> users = new HashSet<>();
 
     public Tag() {
     }
@@ -23,15 +29,20 @@ public class Tag {
     private Tag(String name, boolean isPublished, User user) {
         this.name = name;
         this.isPublished = isPublished;
-        this.user = user;
+        this.users.add(user);
     }
 
-    public static Tag create(String name, User user, boolean isUniqueName) {
+    public static Tag create(String name, User user) {
         var isPublished = user.isAdmin();
-        if (!isUniqueName) {
-            throw new IllegalArgumentException("Tag name must be unique");
-        }
         return new Tag(name, isPublished, user);
+    }
+
+    public void addTagToUser(User user) {
+        users.add(user);
+    }
+
+    public void removeTagFromUser(User user) {
+        users.remove(user);
     }
 
     public Long getId() {
@@ -46,29 +57,20 @@ public class Tag {
         return name;
     }
 
-    public User getUser() {
-        return user;
+    public Set<User> getUsers() {
+        return users;
     }
 
     public boolean isPublished() {
         return isPublished;
     }
 
-    public void updateName(String name, boolean isUniqueName, User updatedBy) {
-        if(isPublished && !updatedBy.isAdmin()) {
-            throw new IllegalArgumentException("Only admin can update published tag name");
-        }
-        if (!updatedBy.isAdmin() && !(updatedBy.getId().equals(user.getId()))) {
-            throw new IllegalArgumentException("Only admin or tag owner can update published tag name");
-        }
-        if (!isUniqueName) {
-            throw new IllegalArgumentException("Tag name must be unique");
-        }
-        this.name = name;
-    }
-
     public void publish() {
         this.isPublished = true;
+    }
+
+    public void unpublish() {
+        this.isPublished = false;
     }
 
     @Override

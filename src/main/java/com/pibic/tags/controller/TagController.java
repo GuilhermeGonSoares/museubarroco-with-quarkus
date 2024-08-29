@@ -22,8 +22,8 @@ public class TagController {
     JsonWebToken jwt;
 
     @GET
-    public Response getAllTags() {
-        var tags = tagServices.getAllTags();
+    public Response getAllPublishedTags() {
+        var tags = tagServices.getAllPublishedTags();
         return Response.ok(tags).build();
     }
 
@@ -35,6 +35,15 @@ public class TagController {
     }
 
     @RolesAllowed({"admin", "user"})
+    @GET
+    @Path("/available")
+    public Response getAvailableTags() {
+        var userId = Long.parseLong(jwt.getClaim("id").toString());
+        var tags = tagServices.getAvailableTags(userId);
+        return Response.ok(tags).build();
+    }
+
+    @RolesAllowed({"admin", "user"})
     @POST
     public Response createTag(@Valid CreateTagRequest createTagRequest) {
         var userId = Long.parseLong(jwt.getClaim("id").toString());
@@ -42,14 +51,6 @@ public class TagController {
         return Response.ok(tag.id()).status(Response.Status.CREATED).build();
     }
 
-    @RolesAllowed({"admin", "user"})
-    @PUT
-    @Path("/{id}")
-    public Response updateTag(@PathParam("id") Long id, @Valid UpdateTagRequest updateTagRequest) {
-        var userId = Long.parseLong(jwt.getClaim("id").toString());
-        var tag = tagServices.updateTag(id, updateTagRequest.name(), userId);
-        return Response.ok(tag).build();
-    }
 
     @RolesAllowed({"admin", "user"})
     @DELETE
