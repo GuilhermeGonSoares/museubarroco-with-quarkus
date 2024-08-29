@@ -57,6 +57,15 @@ public class ChurchController {
     }
 
     @RolesAllowed({"admin", "user"})
+    @GET
+    @Path("/available")
+    public Response getAvailableChurch() {
+        Long userId = Long.parseLong(jwt.getClaim("id").toString());
+        var church = churchService.getAvailableChurches(userId);
+        return Response.ok(church).build();
+    }
+
+    @RolesAllowed({"admin", "user"})
     @POST
     public Response createChurch(@Valid CreateChurchRequest createChurchRequest) {
         Long userId = Long.parseLong(jwt.getClaim("id").toString());
@@ -108,5 +117,14 @@ public class ChurchController {
         Long userId = Long.parseLong(jwt.getClaim("id").toString());
         churchService.deleteChurch(id, userId);
         return Response.noContent().build();
+    }
+
+    @RolesAllowed({"admin"})
+    @PATCH
+    @Path("/{id}/publish")
+    public Response publishChurch(@PathParam("id") Long id) {
+        Long userId = Long.parseLong(jwt.getClaim("id").toString());
+        churchService.publishChurch(id, userId);
+        return Response.ok().build();
     }
 }

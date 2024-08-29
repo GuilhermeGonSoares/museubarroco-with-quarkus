@@ -117,6 +117,20 @@ public class ChurchService {
                 .toList();
     }
 
+    public List<AvailableChurchResponse> getAvailableChurches(Long userId) {
+        var user = userRepository.findByIdOptional(userId).orElseThrow(() -> new NotFoundException("User not found"));
+        if (user.isAdmin()){
+            return churchRepository.list("isPublished = ?1", true)
+                    .stream()
+                    .map(AvailableChurchResponse::fromChurch)
+                    .toList();
+        }
+        return churchRepository.list("isPublished = ?1 or registeredBy.id = ?2", true, userId)
+                .stream()
+                .map(AvailableChurchResponse::fromChurch)
+                .toList();
+    }
+
     @Transactional
     public void updateChurch(UpdateChurchDto updateChurchDto) {
         var church = churchRepository.findById(updateChurchDto.id());
@@ -160,6 +174,19 @@ public class ChurchService {
         churchRepository.delete(church);
         church.getImages().forEach(image -> storageService.deleteFile(BLOB_CONTAINER, image.getUrl()));
         return id;
+    }
+
+    @Transactional
+    public void publishChurch(Long id, Long userId) {
+        var church = churchRepository.findById(id);
+        if (church == null) {
+            throw new NotFoundException("Church not found");
+        }
+        var user = userRepository.findById(userId);
+        if (user == null) {
+            throw new NotFoundException("User not found");
+        }
+        church.publish();
     }
 
     private List<Image> getImageUrls(String churchName, List<ChurchImageDto> images) {
