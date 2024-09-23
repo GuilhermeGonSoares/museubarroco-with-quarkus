@@ -6,6 +6,9 @@ pom.xml.versionsBackup
 release.properties
 .flattened-pom.xml
 
+
+Dockerfile.jvm
+docker-compose-test.yml
 src/main/resources/privateKey.pem
 src/main/resources/publicKey.pem
 rsaPrivateKey.pem

@@ -476,8 +476,7 @@ class PaintingTest {
     private Tag createTag(User user){
         return Tag.create(
                 "Anjo",
-                user,
-                true
+                user
         );
     }
 

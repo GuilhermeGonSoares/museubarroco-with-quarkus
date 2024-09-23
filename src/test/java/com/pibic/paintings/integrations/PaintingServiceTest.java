@@ -338,8 +338,7 @@ class PaintingServiceTest {
     private Tag createTag(User user){
         var tag = Tag.create(
                 "Anjo",
-                user,
-                true
+                user
         );
         tagRepository.persist(tag);
         return tag;

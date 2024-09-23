@@ -292,4 +292,8 @@ public class Painting {
     public void setEngravings(List<Engraving> engravings) {
         this.engravings = engravings;
     }
+
+    public void setTags(Set<Tag> tags) {
+        this.tags = tags;
+    }
 }

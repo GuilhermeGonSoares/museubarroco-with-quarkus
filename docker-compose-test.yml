@@ -1,0 +1,8 @@
+services:
+  museubarroco:
+    image: quarkus/museubarroco-jvm
+    ports:
+      - "80:80"
+    environment:
+      #add env
+

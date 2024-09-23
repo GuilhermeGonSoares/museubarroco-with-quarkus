@@ -33,18 +33,18 @@ public class PaintingController {
     @RolesAllowed({"admin", "user"})
     @GET
     @Path("/authorized")
-    public Response getAuthorizedPaintings(@QueryParam("filter") String filter) {
+    public Response getAuthorizedPaintings() {
         Long userId = Long.parseLong(jwt.getClaim("id").toString());
-        List<PaintingsResponse> responses =paintingService.getAuthorizedPaintings(userId, filter);
+        List<PaintingsResponse> responses =paintingService.getAuthorizedPaintings(userId);
         return Response.ok(responses).build();
     }
 
     @RolesAllowed({"admin", "user"})
     @GET
     @Path("/authorized/{id}")
-    public Response getAuthorizedPaintingById(@PathParam("id") Long id, @QueryParam("filter") String filter) {
+    public Response getAuthorizedPaintingById(@PathParam("id") Long id) {
         Long userId = Long.parseLong(jwt.getClaim("id").toString());
-        PaintingResponse painting = paintingService.getAuthorizedPaintingById(id, userId, filter);
+        PaintingResponse painting = paintingService.getAuthorizedPaintingById(id, userId);
         return Response.ok(painting).build();
     }
 

@@ -81,49 +81,6 @@ public class TagServiceTest {
 
     @Test
     @TestTransaction
-    public void ShouldUpdateTagByAdmin(){
-        var user = createUser(true);
-        var tagResponse = tagServices.createTag("Java", user.getId());
-        var updatedTag = tagServices.updateTag(tagResponse.id(), "Java 17", user.getId());
-        var tag = tagRepository.findById(tagResponse.id());
-        assertNotNull(updatedTag);
-        assertEquals("Java 17", tag.getName());
-        assertEquals(tagResponse.id(), tag.getId());
-    }
-
-    @Test
-    @TestTransaction
-    public void ShouldUpdateTagUnPublishedByOwner(){
-        var user = createUser(false);
-        var tagResponse = tagServices.createTag("Spring", user.getId());
-        var updatedTag = tagServices.updateTag(tagResponse.id(), "Quarkus", user.getId());
-        assertNotNull(updatedTag);
-        assertEquals("Quarkus", updatedTag.name());
-        assertEquals(tagResponse.id(), updatedTag.id());
-    }
-
-    @Test
-    @TestTransaction
-    public void ShouldNotUpdateTagByOwnerWhenIsPublished(){
-        var user = createUser(false);
-        var tag = Tag.create("Java", user, true);
-        tag.publish();
-        tagRepository.persist(tag);
-        assertThrows(IllegalArgumentException.class, () -> tagServices.updateTag(tag.getId(), "Quarkus", user.getId()));
-    }
-
-    @Test
-    @TestTransaction
-    public void ShouldNotUpdateTagByNonOwner(){
-        var user = createUser(false);
-        var tag = Tag.create("Java", user, true);
-        tagRepository.persist(tag);
-        var anotherUser = createUser(false);
-        assertThrows(IllegalArgumentException.class, () -> tagServices.updateTag(tag.getId(), "Quarkus", anotherUser.getId()));
-    }
-
-    @Test
-    @TestTransaction
     public void ShouldAdminDeleteTag(){
         var user = createUser(true);
         var tagResponse = tagServices.createTag("Java", user.getId());
@@ -136,7 +93,7 @@ public class TagServiceTest {
     public void ShouldAdminCanDeletePublishedTag(){
         var user = createUser(false);
         var admin = createUser(true);
-        var tag = Tag.create("Java", user, true);
+        var tag = Tag.create("Java", user);
         tag.publish();
         tagRepository.persist(tag);
         assertThrows(IllegalArgumentException.class, () -> tagServices.deleteTag(tag.getId(), user.getId()));

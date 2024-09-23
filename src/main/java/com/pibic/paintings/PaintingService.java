@@ -14,6 +14,7 @@ import jakarta.transaction.Transactional;
 import jakarta.ws.rs.NotFoundException;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class PaintingService {
@@ -38,13 +39,13 @@ public class PaintingService {
                         LEFT JOIN FETCH p.registeredBy u
                         LEFT JOIN FETCH p.tags t
                         WHERE p.id = ?1 AND p.isPublished = true
-                        and t.isPublished = true
                         """, id)
                 .firstResultOptional().orElseThrow(() -> new NotFoundException("Painting not found"));
+        painting.setTags(painting.getTags().stream().filter(Tag::isPublished).collect(Collectors.toSet()));
         return PaintingResponse.fromPainting(painting);
     }
 
-    public PaintingResponse getAuthorizedPaintingById(Long id, Long userId, String filter) {
+    public PaintingResponse getAuthorizedPaintingById(Long id, Long userId) {
         var user = userRepository.find("id = ?1", userId)
                 .firstResultOptional()
                 .orElseThrow(() -> new NotFoundException("User not found"));
@@ -55,11 +56,6 @@ public class PaintingService {
                 LEFT JOIN FETCH p.tags t
                 WHERE p.id = ?1
                 """);
-        switch (filter == null ? "" : filter) {
-            case "published" -> sql.append("AND p.isPublished = true AND t.isPublished = true ");
-            case "unpublished" -> sql.append("AND p.isPublished = false ");
-            default -> {}
-        }
         if (!user.isAdmin())
             sql.append("AND p.registeredBy.id = ").append(userId);
         return PaintingResponse.fromPainting(
@@ -70,20 +66,19 @@ public class PaintingService {
     }
 
     public List<PaintingsResponse> getPublishedPaintings() {
-        return paintingRepository
-                .list("""
-                        SELECT p FROM Painting p
-                        LEFT JOIN FETCH p.church c
-                        LEFT JOIN FETCH p.registeredBy u
-                        LEFT JOIN FETCH p.tags t
-                        WHERE p.isPublished = true and t.isPublished = true and c.isPublished = true
-                        """)
+        var paintings = paintingRepository
+                .list("isPublished = true and church.isPublished = true")
                 .stream()
-                .filter(p -> p.getChurch() != null)
-                .map(PaintingsResponse::fromPainting)
+                .map(painting -> {
+                    painting.setTags(painting.getTags().stream()
+                            .filter(Tag::isPublished)
+                            .collect(Collectors.toSet()));
+                    return PaintingsResponse.fromPainting(painting);
+                })
                 .toList();
+        return paintings;
     }
-    public List<PaintingsResponse> getAuthorizedPaintings(Long userId, String filter) {
+    public List<PaintingsResponse> getAuthorizedPaintings(Long userId) {
         var user = userRepository.find("id = ?1", userId)
                 .firstResultOptional()
                 .orElseThrow(() -> new NotFoundException("User not found"));
@@ -94,11 +89,6 @@ public class PaintingService {
                 LEFT JOIN FETCH p.tags t
                 WHERE 1 = 1
                 """);
-        switch (filter == null ? "" : filter) {
-            case "published" -> sql.append("AND p.isPublished = true AND t.isPublished = true ");
-            case "unpublished" -> sql.append("AND p.isPublished = false ");
-            default -> {}
-        }
         if (!user.isAdmin())
             sql.append("AND p.registeredBy.id = ").append(userId);
         return paintingRepository

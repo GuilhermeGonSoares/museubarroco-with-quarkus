@@ -7,7 +7,7 @@ import jakarta.validation.ConstraintValidatorContext;
 import java.util.Base64;
 
 public class Base64ImageValidator implements ConstraintValidator<ValidBase64Image, String> {
-    private static final long MAX_SIZE = 10 * 1024 * 1024;
+    private static final long MAX_SIZE = 12 * 1024 * 1024;
 
     @Override
     public boolean isValid(String value, ConstraintValidatorContext constraintValidatorContext) {
